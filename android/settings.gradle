@@ -1,11 +1,49 @@
-include ':app'
+pluginManagement {
+	def flutterSdkPath = {
+		def envFlutterRoot = System.getenv("FLUTTER_ROOT")
+		if (envFlutterRoot != null && !envFlutterRoot.trim().isEmpty() && file(envFlutterRoot).exists()) {
+			return envFlutterRoot
+		}
 
-def localPropertiesFile = new File(rootProject.projectDir, "local.properties")
-def properties = new Properties()
+		def properties = new Properties()
+		def localProperties = file("local.properties")
+		if (localProperties.exists()) {
+			localProperties.withInputStream { properties.load(it) }
+		}
 
-assert localPropertiesFile.exists()
-localPropertiesFile.withReader("UTF-8") { reader -> properties.load(reader) }
+		def localFlutterSdk = properties.getProperty("flutter.sdk")
+		if (localFlutterSdk != null && file(localFlutterSdk).exists()) {
+			return localFlutterSdk
+		}
 
-def flutterSdkPath = properties.getProperty("flutter.sdk")
-assert flutterSdkPath != null, "flutter.sdk not set in local.properties"
-apply from: "$flutterSdkPath/packages/flutter_tools/gradle/app_plugin_loader.gradle"
+		def homeDir = System.getProperty("user.home")
+		def fallbackPaths = [
+			"/snap/flutter/current/usr/flutter",
+			"/var/lib/snapd/snap/flutter/current/usr/flutter",
+			"${homeDir}/snap/flutter/common/flutter"
+		]
+		for (def candidate in fallbackPaths) {
+			if (file(candidate).exists()) {
+				return candidate
+			}
+		}
+
+		throw new RuntimeException("Flutter SDK not found. Set FLUTTER_ROOT or fix flutter.sdk in android/local.properties.")
+	}()
+
+	includeBuild("$flutterSdkPath/packages/flutter_tools/gradle")
+
+	repositories {
+		google()
+		mavenCentral()
+		gradlePluginPortal()
+	}
+}
+
+plugins {
+	id "dev.flutter.flutter-plugin-loader" version "1.0.0"
+	id "com.android.application" version "9.1.0" apply false
+	id "org.jetbrains.kotlin.android" version "2.4.0" apply false
+}
+
+include ":app"
