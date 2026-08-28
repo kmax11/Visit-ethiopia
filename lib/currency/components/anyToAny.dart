@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 import '../functions/fetchRates.dart';
@@ -26,25 +25,25 @@ class _AnyToAnyState extends State<AnyToAny> {
     return Card(
       child: Container(
         // width: w / 3,
-        padding: EdgeInsets.all(20),
+        padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
+            const Text(
               'Convert Any Currency',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
 
             //TextFields for Entering USD
             TextFormField(
-              key: ValueKey('amount'),
+              key: const ValueKey('amount'),
               controller: amountController,
-              decoration: InputDecoration(hintText: 'Enter Amount'),
+              decoration: const InputDecoration(hintText: 'Enter Amount'),
               keyboardType: TextInputType.number,
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Row(
               children: [
                 Expanded(
@@ -75,8 +74,8 @@ class _AnyToAnyState extends State<AnyToAny> {
                   ),
                 ),
                 Container(
-                    margin: EdgeInsets.symmetric(horizontal: 20),
-                    child: Text('To')),
+                    margin: const EdgeInsets.symmetric(horizontal: 20),
+                    child: const Text('To')),
                 Expanded(
                   child: DropdownButton<String>(
                     value: dropdownValue2,
@@ -107,31 +106,25 @@ class _AnyToAnyState extends State<AnyToAny> {
               ],
             ),
 
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Container(
               child: ElevatedButton(
                 onPressed: () {
                   setState(() {
-                    answer = amountController.text +
-                        ' ' +
-                        dropdownValue1 +
-                        ' ' +
-                        convertany(widget.rates, amountController.text,
-                            dropdownValue1, dropdownValue2) +
-                        ' ' +
-                        dropdownValue2;
+                    answer =
+                        '${amountController.text} $dropdownValue1 ${convertany(widget.rates, amountController.text, dropdownValue1, dropdownValue2)} $dropdownValue2';
                   });
                 },
-                child: Text('Convert'),
                 style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all(
+                    backgroundColor: WidgetStateProperty.all(
                         Theme.of(context).primaryColor)),
+                child: const Text('Convert'),
               ),
             ),
-            SizedBox(
+            const SizedBox(
               width: 10,
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Container(child: Text(answer))
           ],
         ),

@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../util/places.dart';
-import 'horizontalPlaceItem.dart';
 
 class CategoryPlaceItem extends StatefulWidget {
   final Map place;
@@ -18,7 +16,7 @@ class _CategoryPlaceItemState extends State<CategoryPlaceItem> {
     return InkWell(
       child: Padding(
         padding: const EdgeInsets.all(10.0),
-        child: Container(
+        child: SizedBox(
           height: 80,
           child:ClipRRect(
             borderRadius: BorderRadius.circular(5),

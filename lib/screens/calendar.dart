@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import '../calendar/models/calendar/EthiopianCalendar.dart';
 
 class CalendarPage extends StatefulWidget {
@@ -8,24 +7,15 @@ class CalendarPage extends StatefulWidget {
   _CalendarPageState createState() => _CalendarPageState();
 }
 
-class _CalendarPageState extends State<CalendarPage> {
-  List img = <String>['0.jpg', '1.jpg'];
-  String present_day = '';
-
-  _currentDay() {
-    var now = new EthiopianCalendar.now();
-
-    var currentDay = now.currentDay();
-    int day_ = currentDay.day!;
-    int month_ = currentDay.month!;
-    int year_ = currentDay.year!;
-    setState(() {
-      present_day = "$day_-$month_-$year_";
-    });
-  }
-
+class _CalendarPageState extends State<CalendarPage>
+    with SingleTickerProviderStateMixin {
+  static const Color _accent = Color(0xFF4F6EF7);
+  static const Color _textPrimary = Color(0xFF1A1A2E);
+  static const Color _textSecondary = Color(0xFF8A8FA8);
 
   EthiopianCalendar _calendar = EthiopianCalendar.now();
+  final EthiopianCalendar _today = EthiopianCalendar.now();
+
   final List<String> _weekdayNames = [
     'Sun',
     'Mon',
@@ -33,224 +23,143 @@ class _CalendarPageState extends State<CalendarPage> {
     'Wed',
     'Thu',
     'Fri',
-    'Sat',
-    // 'እሁድ', 'ሰኞ', 'ማግሰኞ', 'ረቡዕ', 'ሐሙስ', 'አርብ', 'ቅዳሜ',
+    'Sat'
   ];
 
-  List<Widget> _buildDayCells() {
-    _currentDay();
+  // Gregorian month names for subtitle
+  final List<String> _gregMonths = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December'
+  ];
+
+  late AnimationController _animController;
+  late Animation<double> _fadeAnim;
+  int _slideDir = 0; // -1 left, 1 right, 0 init
+
+  @override
+  void initState() {
+    super.initState();
+    _animController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 280),
+    );
+    _fadeAnim =
+        CurvedAnimation(parent: _animController, curve: Curves.easeInOut);
+    _animController.value = 1.0;
+  }
+
+  @override
+  void dispose() {
+    _animController.dispose();
+    super.dispose();
+  }
+
+  void _changeMonth(int dir) async {
+    _animController.reverse();
+    await Future.delayed(const Duration(milliseconds: 180));
+    setState(() {
+      if (dir > 0) {
+        _calendar = _calendar.nextMonth();
+      } else {
+        _calendar = _calendar.previousMonth();
+      }
+      _slideDir = dir;
+    });
+    _animController.forward();
+  }
+
+  String _gregorianSubtitle() {
+    try {
+      final gc = _calendar.toGC();
+      return '${_gregMonths[(gc.month! - 1).clamp(0, 11)]} ${gc.year}';
+    } catch (_) {
+      return '';
+    }
+  }
+
+  bool _isToday(int day) {
+    return _calendar.year == _today.year &&
+        _calendar.month == _today.month &&
+        day == _today.day;
+  }
+
+  int _getGregorianDay(int ethDay) {
+    try {
+      final eth = EthiopianCalendar(
+        year: _calendar.year,
+        month: _calendar.month,
+        day: ethDay,
+      );
+      final gc = eth.toGC();
+      return gc.day ?? ethDay;
+    } catch (_) {
+      return ethDay;
+    }
+  }
+
+  List<Widget> _buildCalendarCells() {
     List<Widget> cells = [];
     int daysInMonth = _calendar.daysInMonth();
     int firstDayOfWeek = _calendar.firstDayOfWeek();
-    int prevMonthDays = _calendar.previousMonth().daysInMonth();
-    int nextMonthDays = _calendar.nextMonth().daysInMonth();
-    // todo weekend
     int prevMonthOffset = (firstDayOfWeek + 5) % 7;
 
-    // Add cells for days from previous month
-    for (int i = prevMonthDays - prevMonthOffset + 1; i <= prevMonthDays; i++) {
-      EthiopianCalendar date = EthiopianCalendar(
-          year: _calendar.year, month: _calendar.month, day: i);
-      int cday = date.day!;
-      int cmonth = date.month!;
-      int cyear = date.year!;
-      String currentDay = "$cday$cmonth$cyear";
-
-      cells.add(
-        GestureDetector(
-          // onTap: () {
-          //   setState(() {
-          //     _calendar = date;
-          //   });
-          // },
-          child: Container(
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.transparent),
-              // color: date.isHoliday ? Colors.red : null,
-              color: null,
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  '${date.day}',
-                  style: TextStyle(
-                      color: Colors.grey.shade600),
-                  textAlign: TextAlign.center,
-                ),
-                // if (date.isHoliday)
-                //   Text(
-                //     date.holiday_name!,
-                //     textAlign: TextAlign.center,
-                //     style: const TextStyle(color: Color(0xffd27405)),
-                //   ),
-                //todo change present day num color
-              ],
-            ),
-          ),
-        ),
-      );
-    }
-
-    // Add cells for each day of the month
-    for (int i = 1; i <= daysInMonth; i++) {
-      EthiopianCalendar date = EthiopianCalendar(
-          year: _calendar.year, month: _calendar.month, day: i);
-
-      int cday = date.day!;
-      int cmonth = date.month!;
-      int cyear = date.year!;
-      String currentDay = "$cday$cmonth$cyear";
-      // print(currentDay);
-
-      cells.add(
-        GestureDetector(
-          onTap: () {
-            setState(() {
-              _calendar = date;
-            });
-          },
-          child: GestureDetector(
-            child: Container(
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.transparent),
-                // color: date.isHoliday ? Colors.red : null,
-                // color: _currentDay(currentDay) ? Colors.red : Colors.teal,
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    '${date.day}',
-                    style: TextStyle(
-                        color: Colors.white),
-                    textAlign: TextAlign.center,
-                  ),
-                  // if (date.isHoliday)
-                  //   Text(
-                  //     date.holiday_name!,
-                  //     textAlign: TextAlign.center,
-                  //     style: TextStyle(
-                  //       color: Color(0xffd27405),
-                  //     ),
-                  //   ),
-                  //todo change present day num color
-                ],
-              ),
-            ),
-          ),
-        ),
-      );
-    }
-
-    // Add cells for days from next month
-    int numCells = cells.length;
-    int numRows = (numCells / 7).ceil() * 7;
-    int nextMonthOffset = numRows - numCells;
-    for (int i = 1; i <= nextMonthOffset; i++) {
-      EthiopianCalendar date = EthiopianCalendar(
-          year: _calendar.year, month: _calendar.month, day: i);
-      int cday = date.day!;
-      int cmonth = date.month!;
-      int cyear = date.year!;
-      String currentDay = "$cday-$cmonth-$cyear";
-      cells.add(
-        GestureDetector(
-          onTap: () {
-            setState(() {
-              _calendar = date;
-            });
-          },
-          child: Container(
-            decoration: BoxDecoration(
-              border: Border.all(),
-              // color: date.isHoliday ? Colors.red : null,
-              color: null,
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  '${date.day}',
-                  style: TextStyle(
-                      color: Colors.white),
-                  textAlign: TextAlign.center,
-                ),
-                // if (date.isHoliday)
-                //   Text(
-                //     date.holiday_name!,
-                //     textAlign: TextAlign.center,
-                //     style: TextStyle(color: Color(0xffd27405)),
-                //   ),
-                //todo change present day num color
-              ],
-            ),
-          ),
-        ),
-      );
-    }
-    for (int i = 1; i <= nextMonthDays - nextMonthOffset; i++) {
-      EthiopianCalendar date = EthiopianCalendar(
-          year: _calendar.year, month: _calendar.month, day: i);
-      cells.add(
-        Container(
-          decoration: BoxDecoration(
-            border: Border.all(color: Colors.transparent),
-            // color: date.isHoliday ? Colors.red : null,
-            color: null,
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                '${i + daysInMonth + 2}',
-                style: TextStyle(color: Colors.white),
-              ),
-              if (date.isHoliday)
-                Text(
-                  date.holiday_name!,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(color: Color(0xffd27405)),
-                ),
-            ],
-          ),
-        ),
-      );
-    }
-
-    // Add weekday name cells
+    // Weekday headers
     for (int i = 0; i < 7; i++) {
-      cells.insert(
-        i,
-        Padding(
-          padding: const EdgeInsets.all(5.0),
-          child: Container(
-            decoration: BoxDecoration(
-              border: Border(
-                bottom: BorderSide(
-                  color: Color(0x00000),
-                  width: 2.0,
-                ),
-              ),
-            ),
-            child: Center(
-              child: Text(
-                _weekdayNames[i],
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.grey.shade300,
-                  // color: Color(0xffd27405),
-                ),
-              ),
-            ),
+      final isWeekend = i == 0 || i == 6;
+      cells.add(Center(
+        child: Text(
+          _weekdayNames[i],
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            fontSize: 12,
+            color: isWeekend ? _accent.withValues(alpha: 0.7) : _textSecondary,
           ),
         ),
-      );
+      ));
     }
 
-    // Remove extra cells for previous month if necessary
-    if (cells.length > 35) {
-      cells.removeRange(35, cells.length);
+    // Previous month filler days
+    int prevMonthDays = _calendar.previousMonth().daysInMonth();
+    for (int i = prevMonthDays - prevMonthOffset + 1; i <= prevMonthDays; i++) {
+      cells.add(_DayCell(
+        ethDay: i,
+        gregDay: null,
+        isToday: false,
+        isCurrentMonth: false,
+      ));
+    }
+
+    // Current month days
+    for (int i = 1; i <= daysInMonth; i++) {
+      final gregDay = _getGregorianDay(i);
+      cells.add(_DayCell(
+        ethDay: i,
+        gregDay: gregDay,
+        isToday: _isToday(i),
+        isCurrentMonth: true,
+      ));
+    }
+
+    // Next month filler days
+    int filled = prevMonthOffset + daysInMonth;
+    int totalCells = ((filled / 7).ceil()) * 7;
+    for (int i = 1; i <= totalCells - filled; i++) {
+      cells.add(_DayCell(
+        ethDay: i,
+        gregDay: null,
+        isToday: false,
+        isCurrentMonth: false,
+      ));
     }
 
     return cells;
@@ -259,143 +168,229 @@ class _CalendarPageState extends State<CalendarPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // floatingActionButton: FloatingActionButton(
-      //   //Floating action button on Scaffold
-      //   backgroundColor: Color.fromARGB(255, 0, 0, 0),
-      //   onPressed: () {
-      //     //code to execute on button press
-      //   },
-      //   child: Icon(
-      //     Icons.calendar_month,
-      //     color: Color(0xff1c1c1c),
-      //   ), //icon inside button
-      // ),
-
-      // floatingActionButtonLocation: FloatingActionButtonLocation.startDocked,
-      //floating action button location to left
-
-      // bottomNavigationBar: BottomAppBar(
-      //   //bottom navigation bar on scaffold
-      //   color: Color(0xff1c1c1c),
-      //   shape: CircularNotchedRectangle(), //shape of notch
-      //   notchMargin:
-      //       5, //notche margin between floating button and bottom appbar
-      //   child: Row(
-      //     //children inside bottom appbar
-      //     mainAxisSize: MainAxisSize.max,
-      //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      //     children: <Widget>[
-      //       Padding(
-      //         padding: EdgeInsets.only(left: 90),
-      //         child: IconButton(
-      //           icon: Icon(
-      //             Icons.home,
-      //             color: Color(0xffd27405),
-      //           ),
-      //           onPressed: () {
-      //           },
-      //         ),
-      //       ),
-      //       IconButton(
-      //         icon:  Icon(
-      //           Icons.attach_money,
-      //           color: Color(0xffd27405),
-      //         ),
-      //         onPressed: () {
-      //           Navigator.pushNamed(context, route.currency);
-      //         },
-      //       ),
-      //       IconButton(
-      //         icon: Icon(
-      //           Icons.info,
-      //           color: Color(0xffd27405),
-      //         ),
-      //         onPressed: () {},
-      //       ),
-      //       IconButton(
-      //         icon: FaIcon(
-      //           FontAwesomeIcons.user,
-      //           color: Color(0xffd27405),
-      //         ),
-      //         onPressed: () {},
-      //       ),
-      //       // IconButton(
-      //       //   icon: Icon(
-      //       //     Icons.user,
-      //       //     color: Color(0xffd27405),
-      //       //   ),
-      //       //   onPressed: () {},
-      //       // ),
-      //     ],
-      //   ),
-      // ),
-      backgroundColor: Color(0xff1c1c),
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: const Color(0xff1c1c1c),
-        foregroundColor: Color.fromARGB(255, 255, 255, 255),
-        centerTitle: false,
-        title: Text('Ethiopian Calendar'),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        centerTitle: true,
+        leading: IconButton(
+          icon: Container(
+            width: 36,
+            height: 36,
+            decoration: BoxDecoration(
+              color: const Color(0xFFF7F8FC),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: const Icon(Icons.arrow_back_ios_rounded,
+                size: 16, color: _textPrimary),
+          ),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        title: const Text(
+          'Ethiopian Calendar',
+          style: TextStyle(
+            color: _textPrimary,
+            fontWeight: FontWeight.w700,
+            fontSize: 18,
+          ),
+        ),
       ),
       body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          GridView.count(
-            shrinkWrap: true,
-            crossAxisCount: 7,
-            children: _buildDayCells(),
+          const SizedBox(height: 8),
+
+          // Month Navigation
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                GestureDetector(
+                  onTap: () => _changeMonth(-1),
+                  child: Container(
+                    width: 42,
+                    height: 42,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF7F8FC),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(Icons.chevron_left_rounded,
+                        color: _textPrimary, size: 26),
+                  ),
+                ),
+                FadeTransition(
+                  opacity: _fadeAnim,
+                  child: Column(
+                    children: [
+                      Text(
+                        '${_calendar.month_name ?? ''} ${_calendar.year ?? ''}',
+                        style: const TextStyle(
+                          color: _textPrimary,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 22,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        _gregorianSubtitle(),
+                        style: const TextStyle(
+                          color: _textSecondary,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () => _changeMonth(1),
+                  child: Container(
+                    width: 42,
+                    height: 42,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF7F8FC),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(Icons.chevron_right_rounded,
+                        color: _textPrimary, size: 26),
+                  ),
+                ),
+              ],
+            ),
           ),
-          SizedBox(height: 30,),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              IconButton(
-                icon: const Icon(
-                  Icons.arrow_left,
-                  color: Color.fromARGB(255, 232, 232, 232),
-                  size: 60,
+
+          const SizedBox(height: 20),
+
+          // Divider
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 20),
+            child: Divider(color: Color(0xFFEEEFF3), height: 1),
+          ),
+          const SizedBox(height: 12),
+
+          // Calendar Grid
+          Expanded(
+            child: FadeTransition(
+              opacity: _fadeAnim,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: GridView.count(
+                  crossAxisCount: 7,
+                  childAspectRatio: 0.9,
+                  physics: const NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  children: _buildCalendarCells(),
                 ),
-                onPressed: () {
-                  setState(() {
-                    _calendar = _calendar.previousMonth();
-                  });
-                },
               ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    '${_calendar.month_name} ${_calendar.year}',
-                    style: const TextStyle(
-                        color: Color.fromARGB(255, 255, 255, 255),
-                        fontSize: 20,
-                        fontFamily: 'Poppins'),
-                    textAlign: TextAlign.center,
+            ),
+          ),
+
+          // Today chip
+          Container(
+            margin: const EdgeInsets.only(bottom: 24, top: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            decoration: BoxDecoration(
+              color: _accent.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(50),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.today_rounded, color: _accent, size: 16),
+                const SizedBox(width: 8),
+                Text(
+                  'Today: ${_today.month_name ?? ''} ${_today.day}, ${_today.year}',
+                  style: const TextStyle(
+                    color: _accent,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 13,
                   ),
-                  Text(
-                    present_day,
-                    style: const TextStyle(
-                        color: Color.fromARGB(255, 255, 255, 255),
-                        fontSize: 10,
-                        fontFamily: 'Poppins'),
-                    textAlign: TextAlign.center,
-                  ),
-                ],
-              ),
-              IconButton(
-                icon: Icon(
-                  Icons.arrow_right,
-                  color: Color.fromARGB(255, 255, 255, 255),
-                  size: 60,
                 ),
-                onPressed: () {
-                  setState(() {
-                    _calendar = _calendar.nextMonth();
-                  });
-                },
-              ),
-            ],
+              ],
+            ),
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: _accent,
+        foregroundColor: Colors.white,
+        elevation: 4,
+        onPressed: () {},
+        child: const Icon(Icons.add_rounded, size: 28),
+      ),
+    );
+  }
+}
+
+// ─── Day Cell Widget ──────────────────────────────────────────────────────────
+class _DayCell extends StatelessWidget {
+  final int ethDay;
+  final int? gregDay;
+  final bool isToday;
+  final bool isCurrentMonth;
+
+  const _DayCell({
+    required this.ethDay,
+    required this.gregDay,
+    required this.isToday,
+    required this.isCurrentMonth,
+  });
+
+  static const Color _accent = Color(0xFF4F6EF7);
+  static const Color _textPrimary = Color(0xFF1A1A2E);
+  static const Color _textSecondary = Color(0xFF8A8FA8);
+
+  @override
+  Widget build(BuildContext context) {
+    Color dayColor;
+    if (isToday) {
+      dayColor = Colors.white;
+    } else if (!isCurrentMonth) {
+      dayColor = _textSecondary.withValues(alpha: 0.35);
+    } else {
+      dayColor = _textPrimary;
+    }
+
+    return Center(
+      child: Container(
+        width: 40,
+        height: 44,
+        decoration: isToday
+            ? BoxDecoration(
+                color: _accent,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: _accent.withValues(alpha: 0.35),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              )
+            : null,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              '$ethDay',
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: isToday ? FontWeight.w700 : FontWeight.w500,
+                color: dayColor,
+              ),
+            ),
+            if (gregDay != null && isCurrentMonth)
+              Text(
+                '$gregDay',
+                style: TextStyle(
+                  fontSize: 9,
+                  color: isToday
+                      ? Colors.white.withValues(alpha: 0.75)
+                      : _textSecondary.withValues(alpha: 0.65),
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }

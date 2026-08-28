@@ -16,7 +16,7 @@ class MyHomePage extends StatelessWidget {
           // The title text which will be shown on the action bar
           title: Text(title),
         ),
-        body: Res());
+        body: const Res());
   }
 }
 
@@ -53,6 +53,8 @@ class _FeedbackState extends State<Feedback> {
 class InputButtonWidget extends StatelessWidget {
   final TextEditingController textController = TextEditingController();
 
+  InputButtonWidget({super.key});
+
   void _onButtonPressed() async {
     final String input = textController.text;
     // TODO: Handle button press with input.
@@ -76,14 +78,14 @@ class InputButtonWidget extends StatelessWidget {
       children: [
         TextField(
           controller: textController,
-          decoration: InputDecoration(
+          decoration: const InputDecoration(
             labelText: 'Enter input',
           ),
         ),
-        SizedBox(height: 16),
+        const SizedBox(height: 16),
         ElevatedButton(
           onPressed: _onButtonPressed,
-          child: Text('Submit'),
+          child: const Text('Submit'),
         ),
       ],
     );

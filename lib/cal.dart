@@ -5,7 +5,7 @@ import 'package:visitethiopia/screens/MainScreen.dart';
 import 'package:visitethiopia/util/Constant.dart';
 
 void main() async{
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -18,10 +18,10 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      home: MainScreen(),
+      home: const MainScreen(),
       debugShowCheckedModeBanner: false,
       translations: LocaleString(),
-      locale: Locale('en', 'US'),
+      locale: const Locale('en', 'US'),
       title: Constants.appName,
       theme: Constants.darkTheme,
       darkTheme: Constants.darkTheme,

@@ -33,13 +33,13 @@ class _MyCurrencyState extends State<MyCurrency> {
     var h = MediaQuery.of(context).size.height;
     var w = MediaQuery.of(context).size.width;
     return Scaffold(
-        appBar: AppBar(title: Text('Open Exchange Flutter')),
+        appBar: AppBar(title: const Text('Open Exchange Flutter')),
 
         //Future Builder for Getting Exchange Rates
         body: Container(
           height: h,
           width: w,
-          padding: EdgeInsets.all(10),
+          padding: const EdgeInsets.all(10),
           child: SingleChildScrollView(
             child: Form(
               key: formkey,
@@ -47,7 +47,7 @@ class _MyCurrencyState extends State<MyCurrency> {
                 future: result,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Center(child: CircularProgressIndicator());
+                    return const Center(child: CircularProgressIndicator());
                   }
                   return Center(
                     child: FutureBuilder<Map>(
@@ -55,7 +55,7 @@ class _MyCurrencyState extends State<MyCurrency> {
                         builder: (context, currSnapshot) {
                           if (currSnapshot.connectionState ==
                               ConnectionState.waiting) {
-                            return Center(child: CircularProgressIndicator());
+                            return const Center(child: CircularProgressIndicator());
                           }
                           return Column(
                             mainAxisAlignment: MainAxisAlignment.center,

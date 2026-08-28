@@ -1,4 +1,3 @@
-
 import '../models/calendar/EthiopianCalendar.dart';
 
 const List<String> days = ["ሰኞ", "ማግሰኞ", "ረቡዕ", "ሐሙስ", "አርብ", "ቅዳሜ", "እሁድ"];
@@ -18,7 +17,7 @@ const List<String?> months = [
   "ሰኔ",
   "ኃምሌ",
   "ነሐሴ",
-  "ጷጉሜን"
+  "ጷጉሜ"
 ];
 
 class Bahirehasab {
@@ -26,7 +25,7 @@ class Bahirehasab {
 
   static const List<String> evangelists = ["ዮሐንስ", "ማቴዎስ", "ማርቆስ", "ሉቃስ"];
 
-  List<Map<String, dynamic>> _yeeletTewsak = [
+  final List<Map<String, dynamic>> _yeeletTewsak = [
     {"key": "አርብ", "value": 2},
     {"key": "ሐሙስ", "value": 3},
     {"key": "ረቡዕ", "value": 4},
@@ -36,7 +35,7 @@ class Bahirehasab {
     {"key": "ቅዳሜ", "value": 8},
   ];
 
-  Map<String, int> _yebealTewsak = {
+  final Map<String, int> _yebealTewsak = {
     "ነነዌ": 0,
     "ዓቢይ ጾም": 14,
     "ደብረ ዘይት": 41,
@@ -54,7 +53,7 @@ class Bahirehasab {
   static const int tinteAbekte = 11;
   static const int tinteMetkih = 19;
 
-  int get ameteAlem => ameteFida + this.year!;
+  int get ameteAlem => ameteFida + year!;
   int get wenber => ((ameteAlem % 19) - 1) < 0 ? 0 : (ameteAlem % 19) - 1;
   int get abekte => (wenber * tinteAbekte) % 30;
   int get metkih => wenber == 0 ? 30 : (wenber * tinteMetkih) % 30;
@@ -62,7 +61,7 @@ class Bahirehasab {
   Bahirehasab.named({this.year});
 
   Bahirehasab() {
-    this.year = new EthiopianCalendar().year;
+    year = EthiopianCalendar().year;
   }
 
   String getEvangelist({bool returnName = false}) {
@@ -94,20 +93,22 @@ class Bahirehasab {
     int month = yebealeMetkihWer();
     int date;
     int? dayTewsak;
-    _yeeletTewsak.forEach((el) => {
-          if (el['key'] == days[(days.indexOf(meskerem1) + metkih - 1) % 7])
-            dayTewsak = el['value']
-        });
+    for (var el in _yeeletTewsak) {
+      if (el['key'] == days[(days.indexOf(meskerem1) + metkih - 1) % 7]) {
+        dayTewsak = el['value'];
+      }
+    }
     String monthName = dayTewsak! + metkih > 30 ? 'የካቲት' : 'ጥር';
     if (month == 2) {
       // ጥቅምት
       monthName = 'የካቲት';
       String tikimt1 = days[(days.indexOf(meskerem1) + 2) % 7];
       String metkihElet = days[(days.indexOf(tikimt1) + metkih - 1) % 7];
-      _yeeletTewsak.forEach((el) => {
-            if (el['key'] == days[days.indexOf(metkihElet)])
-              dayTewsak = el['value']
-          });
+      for (var el in _yeeletTewsak) {
+        if (el['key'] == days[days.indexOf(metkihElet)]) {
+          dayTewsak = el['value'];
+        }
+      }
     }
     date = metkih + dayTewsak!;
     return {"month": monthName, "date": date % 30 == 0 ? 30 : date % 30};
@@ -135,17 +136,17 @@ class Bahirehasab {
     if (_yebealTewsak.keys.contains(holidayName)) {
       return true;
     } else {
-      throw new Exception("Invalid beal name!!");
+      throw Exception("Invalid beal name!!");
     }
   }
 
-  Map<String, dynamic>? getSingleBeal(String holiday_name) {
+  Map<String, dynamic>? getSingleBeal(String holidayName) {
     Map<String, dynamic>? beal;
     try {
-      bool status = isMovableHoliday(holiday_name);
+      bool status = isMovableHoliday(holidayName);
       if (status) {
         Map<String, dynamic> mebajaHamer = nenewe;
-        int? target = _yebealTewsak[holiday_name];
+        int? target = _yebealTewsak[holidayName];
         beal = {
           "month": months[months.indexOf(mebajaHamer['month']) +
               ((mebajaHamer['date'] + target) ~/ 30) as int],
