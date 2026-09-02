@@ -1,9 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:http/http.dart' as http;
 import 'package:visitethiopia/login/Forget.dart';
 import 'package:visitethiopia/login/signup.dart';
 import 'package:visitethiopia/main.dart';
@@ -27,6 +25,8 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+    emailController.text = 'visit@gmail.com';
+    passwordController.text = 'visit';
     _slideController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 700),
@@ -112,7 +112,7 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
                       ),
                       const SizedBox(height: 10),
                       const Text(
-                        'AntiGravity',
+                        'Visit Ethiopia',
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 22,
@@ -198,7 +198,35 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
                             fontFamily: 'Poppins',
                           ),
                         ),
-                        const SizedBox(height: 28),
+                        const SizedBox(height: 12),
+
+                        // Prototype credentials badge
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                          decoration: BoxDecoration(
+                            color: accent.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(14),
+                            border: Border.all(color: accent.withValues(alpha: 0.3)),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(Icons.key_rounded, size: 18, color: accent),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: Text(
+                                  'Demo Login: visit@gmail.com / visit',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: textPrimary,
+                                    fontWeight: FontWeight.w600,
+                                    fontFamily: 'Poppins',
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 20),
 
                         // Email field
                         TextField(
@@ -315,47 +343,34 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
                                 ? null
                                 : () async {
                                     setState(() => _isLoading = true);
-                                    try {
-                                      const url =
-                                          'https://termuze01.000webhostapp.com/php/login.php';
-                                      final data = {
-                                        'email': emailController.text,
-                                        'password': passwordController.text,
-                                      };
-                                      final response = await http
-                                          .post(Uri.parse(url), body: data);
-                                      final parsed = jsonDecode(response.body);
-                                      if (parsed["number"] == 1) {
-                                        Navigator.pushReplacement(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) => MainScreen()),
-                                        );
-                                      } else {
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
-                                          SnackBar(
-                                            content:
-                                                const Text('Invalid credentials'),
-                                            backgroundColor: Colors.red[700],
-                                            behavior: SnackBarBehavior.floating,
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(12),
-                                            ),
-                                          ),
-                                        );
-                                      }
-                                    } catch (e) {
+                                    await Future.delayed(
+                                        const Duration(milliseconds: 500));
+                                    setState(() => _isLoading = false);
+
+                                    final email = emailController.text.trim();
+                                    final password = passwordController.text.trim();
+
+                                    if (email == 'visit@gmail.com' &&
+                                        password == 'visit') {
+                                      Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                const MainScreen()),
+                                      );
+                                    } else {
                                       ScaffoldMessenger.of(context).showSnackBar(
                                         SnackBar(
-                                          content: Text('Error: $e'),
+                                          content: const Text(
+                                              'Invalid credentials. Use email: visit@gmail.com & password: visit'),
                                           backgroundColor: Colors.red[700],
                                           behavior: SnackBarBehavior.floating,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(12),
+                                          ),
                                         ),
                                       );
-                                    } finally {
-                                      setState(() => _isLoading = false);
                                     }
                                   },
                             child: _isLoading

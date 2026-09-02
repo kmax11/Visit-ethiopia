@@ -4,7 +4,7 @@ import 'package:visitethiopia/main.dart';
 import 'package:visitethiopia/screens/home.dart';
 import 'package:visitethiopia/screens/calendar.dart';
 import 'package:visitethiopia/screens/favorites.dart';
-import 'package:visitethiopia/login/signin.dart';
+import 'package:visitethiopia/screens/profile.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({Key? key}) : super(key: key);
@@ -21,7 +21,7 @@ class _MainScreenState extends State<MainScreen> {
     Home(),
     CalendarPage(),
     FavoritesPage(),
-    Login(),
+    ProfilePage(),
   ];
 
   final List<_NavItem> _navItems = const [

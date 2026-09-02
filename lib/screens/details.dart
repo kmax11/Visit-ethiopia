@@ -14,7 +14,7 @@ class Details extends StatefulWidget {
 }
 
 class _DetailsState extends State<Details> {
-  bool _isSending = false;
+  final bool _isSending = false;
   final TextEditingController _feedbackController = TextEditingController();
 
   final List<Map<String, dynamic>> _tags = [
@@ -244,6 +244,29 @@ class _DetailsState extends State<Details> {
                             contentPadding: const EdgeInsets.all(16),
                           ),
                         ),
+                        const SizedBox(height: 10),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: ElevatedButton.icon(
+                            onPressed: () {
+                              if (_feedbackController.text.trim().isNotEmpty) {
+                                _feedbackController.clear();
+                                _showMessageSentModal(context);
+                              } else {
+                                _showMessageSentModal(context);
+                              }
+                            },
+                            icon: const Icon(Icons.send_rounded, size: 16),
+                            label: const Text('Submit', style: TextStyle(fontFamily: 'Poppins', fontSize: 13, fontWeight: FontWeight.w600)),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: accent,
+                              foregroundColor: Colors.white,
+                              elevation: 0,
+                              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -268,7 +291,7 @@ class _DetailsState extends State<Details> {
                     // Message button
                     Expanded(
                       child: OutlinedButton(
-                        onPressed: () {},
+                        onPressed: () => _showMessageComposeModal(context, '${place["name"]}'),
                         style: OutlinedButton.styleFrom(
                           foregroundColor: textPrimary,
                           side: BorderSide(color: isDark ? const Color(0xFF2A2D40) : const Color(0xFFE0E2EC), width: 1.5),
@@ -318,5 +341,192 @@ class _DetailsState extends State<Details> {
         ),
       );
     });
+  }
+
+  void _showMessageSentModal(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final accent = isDark ? const Color(0xFF7B96FF) : const Color(0xFF4F6EF7);
+    final surface = isDark ? const Color(0xFF1C1F2E) : Colors.white;
+    final textPrimary = isDark ? const Color(0xFFE8EAF6) : const Color(0xFF1A1A2E);
+    final textSecondary = isDark ? const Color(0xFFB0B3C6) : const Color(0xFF8A8FA8);
+
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        return Dialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+          backgroundColor: surface,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 72,
+                  height: 72,
+                  decoration: BoxDecoration(
+                    color: Colors.green.withValues(alpha: 0.15),
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.green.withValues(alpha: 0.3), width: 2),
+                  ),
+                  child: const Icon(Icons.check_circle_rounded, color: Colors.green, size: 44),
+                ),
+                const SizedBox(height: 20),
+                Text(
+                  'Message Sent!',
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w700,
+                    color: textPrimary,
+                    fontFamily: 'Poppins',
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  'Your message has been sent successfully. We will get back to you shortly!',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: textSecondary,
+                    fontFamily: 'Poppins',
+                    height: 1.4,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 24),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: accent,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                    ),
+                    onPressed: () => Navigator.pop(ctx),
+                    child: const Text(
+                      'Done',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        fontFamily: 'Poppins',
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _showMessageComposeModal(BuildContext context, String placeName) {
+    final TextEditingController msgController = TextEditingController();
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final accent = isDark ? const Color(0xFF7B96FF) : const Color(0xFF4F6EF7);
+    final surface = isDark ? const Color(0xFF1C1F2E) : Colors.white;
+    final textPrimary = isDark ? const Color(0xFFE8EAF6) : const Color(0xFF1A1A2E);
+    final textSecondary = isDark ? const Color(0xFFB0B3C6) : const Color(0xFF8A8FA8);
+    final inputFill = isDark ? const Color(0xFF252840) : const Color(0xFFF7F8FC);
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (ctx) {
+        return Padding(
+          padding: EdgeInsets.only(
+            left: 24,
+            right: 24,
+            top: 24,
+            bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: textSecondary.withValues(alpha: 0.3),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Send Message to $placeName Host',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  color: textPrimary,
+                  fontFamily: 'Poppins',
+                ),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                'Ask a question or inquire about tour details',
+                style: TextStyle(fontSize: 13, color: textSecondary, fontFamily: 'Poppins'),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: msgController,
+                maxLines: 4,
+                style: TextStyle(color: textPrimary, fontFamily: 'Poppins'),
+                decoration: InputDecoration(
+                  hintText: 'Write your message here...',
+                  hintStyle: TextStyle(color: textSecondary, fontSize: 14),
+                  filled: true,
+                  fillColor: inputFill,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: BorderSide.none,
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: BorderSide(color: accent, width: 2),
+                  ),
+                  contentPadding: const EdgeInsets.all(16),
+                ),
+              ),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    Navigator.pop(ctx);
+                    _showMessageSentModal(context);
+                  },
+                  icon: const Icon(Icons.send_rounded, size: 18),
+                  label: const Text(
+                    'Send Message',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                      fontFamily: 'Poppins',
+                    ),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: accent,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(50),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 }
