@@ -1,189 +1,532 @@
-
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import '../map/map.dart';
 import '../util/places.dart';
+import 'package:visitethiopia/main.dart';
+import 'package:get/get.dart';
+import 'hotel_list.dart';
 
-class Details extends StatelessWidget {
-  int index;
-  Details({super.key, required this.index});
-  TextEditingController feedbackcontrol = TextEditingController();
+class Details extends StatefulWidget {
+  final int index;
+  const Details({super.key, required this.index});
 
-  void sendRequest() async {
-    final url =
-    Uri.parse('https://termuze01.000webhostapp.com/php/feedbacksend.php');
-    final response = await http.post(url, body: {
-      'feedback': feedbackcontrol.text,
-      'otherr': 'value2',
-    });
-    if (response.statusCode == 200) {
-      print('Request successful');
-    } else {
-      print('Request failed with status: ${response.statusCode}.');
-    }
+  @override
+  State<Details> createState() => _DetailsState();
+}
+
+class _DetailsState extends State<Details> {
+  final bool _isSending = false;
+  final TextEditingController _feedbackController = TextEditingController();
+
+  final List<Map<String, dynamic>> _tags = [
+    {'icon': Icons.confirmation_num_outlined, 'label': 'ticket'},
+    {'icon': Icons.hotel_outlined, 'label': 'hotel'},
+    {'icon': Icons.restaurant_outlined, 'label': 'meal'},
+  ];
+
+  @override
+  void dispose() {
+    _feedbackController.dispose();
+    super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          onPressed: ()=>Navigator.pop(context),
-          icon: Icon(Icons.arrow_back),
-        ),
-        actions: [
-          InkWell(
-            child: Column(
-              children: [
-                IconButton(onPressed: (){
-                  
-                }, icon: Icon(Icons.language))
+    final place = places[widget.index];
+    final images = place['img'] as List;
+
+    return Obx(() {
+      final themeCtrl = Get.find<ThemeController>();
+      final favCtrl = Get.find<FavoritesController>();
+      final isDark = themeCtrl.isDark;
+      final accent = isDark ? const Color(0xFF7B96FF) : const Color(0xFF4F6EF7);
+      final bg = isDark ? const Color(0xFF0F1117) : const Color(0xFFF7F8FC);
+      final cardBg = isDark ? const Color(0xFF1C1F2E) : Colors.white;
+      final textPrimary = isDark ? const Color(0xFFE8EAF6) : const Color(0xFF1A1A2E);
+      final textSecondary = isDark ? const Color(0xFFB0B3C6) : const Color(0xFF8A8FA8);
+      final tagBg = isDark ? const Color(0xFF252840) : const Color(0xFFF7F8FC);
+      final tagBorder = isDark ? const Color(0xFF2A2D40) : const Color(0xFFEEEFF3);
+      final inputFill = isDark ? const Color(0xFF252840) : const Color(0xFFF7F8FC);
+      final bottomBarBg = isDark ? const Color(0xFF161A27) : Colors.white;
+      final isFav = favCtrl.isFavorite(widget.index);
+
+      return Scaffold(
+        backgroundColor: bg,
+        body: Stack(
+          children: [
+            CustomScrollView(
+              slivers: [
+                // Hero sliver
+                SliverAppBar(
+                  expandedHeight: 340,
+                  pinned: true,
+                  backgroundColor: isDark ? const Color(0xFF161A27) : Colors.white,
+                  leading: GestureDetector(
+                    onTap: () => Navigator.pop(context),
+                    child: Container(
+                      margin: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withValues(alpha: 0.35),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(Icons.arrow_back_ios_rounded, color: Colors.white, size: 18),
+                    ),
+                  ),
+                  actions: [
+                    GestureDetector(
+                      onTap: () => favCtrl.toggleFavorite(widget.index),
+                      child: Container(
+                        margin: const EdgeInsets.all(8),
+                        width: 40, height: 40,
+                        decoration: BoxDecoration(
+                          color: Colors.black.withValues(alpha: 0.35),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          isFav ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                          color: isFav ? Colors.red : Colors.white,
+                          size: 20,
+                        ),
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        final double lat = (place["lat"] as num?)?.toDouble() ?? 9.0320;
+                        final double lng = (place["lng"] as num?)?.toDouble() ?? 38.7469;
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => MapSample(
+                              lat: lat,
+                              lng: lng,
+                              title: '${place["name"]}',
+                              snippet: '${place["location"]}',
+                            ),
+                          ),
+                        );
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.only(right: 12, top: 8, bottom: 8),
+                        width: 40, height: 40,
+                        decoration: BoxDecoration(
+                          color: Colors.black.withValues(alpha: 0.35),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(Icons.location_on_rounded, color: Colors.white, size: 20),
+                      ),
+                    ),
+                  ],
+                  flexibleSpace: FlexibleSpaceBar(
+                    background: ClipRRect(
+                      borderRadius: const BorderRadius.only(
+                        bottomLeft: Radius.circular(28),
+                        bottomRight: Radius.circular(28),
+                      ),
+                      child: images.isNotEmpty
+                          ? PageView.builder(
+                              itemCount: images.length,
+                              itemBuilder: (context, i) => Image.asset(images[i], fit: BoxFit.cover),
+                            )
+                          : Container(color: bg),
+                    ),
+                  ),
+                ),
+
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 24, 20, 100),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Name + Price
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: Text(
+                                '${place["name"]}',
+                                style: TextStyle(fontWeight: FontWeight.w700, fontSize: 24, color: textPrimary, height: 1.2, fontFamily: 'Poppins'),
+                              ),
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                Text('from'.tr, style: TextStyle(fontSize: 11, color: textSecondary)),
+                                RichText(
+                                  text: TextSpan(
+                                    style: const TextStyle(fontFamily: 'Poppins'),
+                                    children: [
+                                      TextSpan(text: '\$299',
+                                        style: TextStyle(color: accent, fontWeight: FontWeight.w700, fontSize: 20)),
+                                      TextSpan(text: 'perTrip'.tr,
+                                        style: TextStyle(color: textSecondary, fontSize: 12)),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+
+                        const SizedBox(height: 10),
+
+                        // Location + stars
+                        Row(
+                          children: [
+                            Icon(Icons.location_on_rounded, size: 15, color: accent),
+                            const SizedBox(width: 4),
+                            Text('${place["location"]}', style: TextStyle(fontSize: 13, color: textSecondary)),
+                            const Spacer(),
+                            Row(children: [
+                              for (int i = 0; i < 5; i++)
+                                Icon(i < 4 ? Icons.star_rounded : Icons.star_half_rounded,
+                                  size: 14, color: const Color(0xFFFFD700)),
+                              const SizedBox(width: 4),
+                              Text('4.5', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: textPrimary)),
+                            ]),
+                          ],
+                        ),
+
+                        const SizedBox(height: 20),
+
+                        // Tag chips
+                        Row(
+                          children: _tags.map((tag) {
+                            return Container(
+                              margin: const EdgeInsets.only(right: 10),
+                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                              decoration: BoxDecoration(
+                                color: tagBg,
+                                borderRadius: BorderRadius.circular(50),
+                                border: Border.all(color: tagBorder),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(tag['icon'] as IconData, size: 14, color: accent),
+                                  const SizedBox(width: 5),
+                                  Text((tag['label'] as String).tr,
+                                    style: TextStyle(fontSize: 12, color: textPrimary, fontWeight: FontWeight.w500, fontFamily: 'Poppins')),
+                                ],
+                              ),
+                            );
+                          }).toList(),
+                        ),
+
+                        const SizedBox(height: 24),
+
+                        // Schedule Overview
+                        Text('scheduleOverview'.tr,
+                          style: TextStyle(fontWeight: FontWeight.w700, fontSize: 17, color: textPrimary, fontFamily: 'Poppins')),
+                        const SizedBox(height: 10),
+                        Text('${place["details"]}',
+                          style: TextStyle(fontWeight: FontWeight.w400, fontSize: 14, color: textSecondary, height: 1.6)),
+
+                        const SizedBox(height: 32),
+
+                        // Feedback
+                        Text('leaveReview'.tr,
+                          style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16, color: textPrimary, fontFamily: 'Poppins')),
+                        const SizedBox(height: 12),
+                        TextField(
+                          controller: _feedbackController,
+                          maxLines: 3,
+                          style: TextStyle(color: textPrimary, fontFamily: 'Poppins'),
+                          decoration: InputDecoration(
+                            hintText: 'shareExperience'.tr,
+                            hintStyle: TextStyle(color: textSecondary, fontSize: 14),
+                            filled: true,
+                            fillColor: inputFill,
+                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(20), borderSide: BorderSide.none),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(20),
+                              borderSide: BorderSide(color: accent, width: 2),
+                            ),
+                            contentPadding: const EdgeInsets.all(16),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: ElevatedButton.icon(
+                            onPressed: () {
+                              if (_feedbackController.text.trim().isNotEmpty) {
+                                _feedbackController.clear();
+                                _showMessageSentModal(context);
+                              } else {
+                                _showMessageSentModal(context);
+                              }
+                            },
+                            icon: const Icon(Icons.send_rounded, size: 16),
+                            label: const Text('Submit', style: TextStyle(fontFamily: 'Poppins', fontSize: 13, fontWeight: FontWeight.w600)),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: accent,
+                              foregroundColor: Colors.white,
+                              elevation: 0,
+                              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               ],
             ),
-          )
-        ],
-      ),
-      body: ListView(
-        children: [
-          SizedBox(height: 10,),
-          buildSlider(),
-          SizedBox(height: 20),
-          ListView(
-            padding: EdgeInsets.symmetric(horizontal: 20),
-            primary: false,
-            physics: NeverScrollableScrollPhysics(),
-            shrinkWrap: true,
-            children: <Widget>[
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Container(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      "${places[index]["name"]}",
-                      style: TextStyle(
-                        fontWeight: FontWeight.w700,
-                        fontSize: 19,
+
+            // Bottom buttons
+            Positioned(
+              bottom: 0, left: 0, right: 0,
+              child: Container(
+                padding: EdgeInsets.fromLTRB(20, 16, 20, MediaQuery.of(context).padding.bottom + 16),
+                decoration: BoxDecoration(
+                  color: bottomBarBg,
+                  boxShadow: [BoxShadow(
+                    color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.06),
+                    blurRadius: 20, offset: const Offset(0, -4),
+                  )],
+                ),
+                child: Row(
+                  children: [
+                    // Message button
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: () => _showMessageComposeModal(context, '${place["name"]}'),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: textPrimary,
+                          side: BorderSide(color: isDark ? const Color(0xFF2A2D40) : const Color(0xFFE0E2EC), width: 1.5),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                        ),
+                        child: Text('message'.tr,
+                          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15, fontFamily: 'Poppins', color: textPrimary)),
                       ),
-                      maxLines: 2,
-                      textAlign: TextAlign.left,
                     ),
-                  ),
-                  IconButton(
-                    icon: Icon(
-                      Icons.location_on_sharp,
-                    ),
-                    onPressed: () {
-                      Navigator.of(context).push(
-                          MaterialPageRoute(builder: (BuildContext context){
-                            return MapSample();
-                          })
-                      );
-                    },
-                  ),
-                ],
-              ),
-              Row(
-                children: <Widget>[
-                  Icon(
-                    Icons.location_on,
-                    size: 14,
-                    color: Colors.blueGrey[300],
-                  ),
-                  SizedBox(width: 3),
-                  Container(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      "${places[index]["location"]}",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 13,
-                        color: Colors.blueGrey[300],
+                    const SizedBox(width: 12),
+                    // Book Now button
+                    Expanded(
+                      flex: 2,
+                      child: ElevatedButton(
+                        onPressed: _isSending
+                            ? null
+                            : () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => HotelListPage(
+                                      placeName: '${place["name"]}',
+                                    ),
+                                  ),
+                                );
+                              },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: accent,
+                          foregroundColor: Colors.white,
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                        ),
+                        child: _isSending
+                            ? const SizedBox(height: 20, width: 20,
+                                child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                            : Text('bookNow'.tr,
+                                style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15, fontFamily: 'Poppins')),
                       ),
-                      maxLines: 1,
-                      textAlign: TextAlign.left,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    });
+  }
+
+  void _showMessageSentModal(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final accent = isDark ? const Color(0xFF7B96FF) : const Color(0xFF4F6EF7);
+    final surface = isDark ? const Color(0xFF1C1F2E) : Colors.white;
+    final textPrimary = isDark ? const Color(0xFFE8EAF6) : const Color(0xFF1A1A2E);
+    final textSecondary = isDark ? const Color(0xFFB0B3C6) : const Color(0xFF8A8FA8);
+
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        return Dialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+          backgroundColor: surface,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 72,
+                  height: 72,
+                  decoration: BoxDecoration(
+                    color: Colors.green.withValues(alpha: 0.15),
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.green.withValues(alpha: 0.3), width: 2),
+                  ),
+                  child: const Icon(Icons.check_circle_rounded, color: Colors.green, size: 44),
+                ),
+                const SizedBox(height: 20),
+                Text(
+                  'Message Sent!',
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w700,
+                    color: textPrimary,
+                    fontFamily: 'Poppins',
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  'Your message has been sent successfully. We will get back to you shortly!',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: textSecondary,
+                    fontFamily: 'Poppins',
+                    height: 1.4,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 24),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: accent,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                    ),
+                    onPressed: () => Navigator.pop(ctx),
+                    child: const Text(
+                      'Done',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        fontFamily: 'Poppins',
+                      ),
                     ),
                   ),
-                ],
-              ),
-              SizedBox(height: 40),
-              Container(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  "Details",
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
-                  maxLines: 1,
-                  textAlign: TextAlign.left,
                 ),
-              ),
-              SizedBox(height: 10.0),
-              Container(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  "${places[index]["details"]}",
-                  style: TextStyle(
-                    fontWeight: FontWeight.normal,
-                    fontSize: 15.0,
-                  ),
-                  textAlign: TextAlign.left,
-                ),
-              ),
-              SizedBox(height: 100.0),
-              ////////ADDD
-              TextField(
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(20)),
-                      borderSide: BorderSide(
-                        color: Color(0xffefff00),
-                        width: 5,
-                      )),
-                  labelText: 'your feedback area',
-                ),
-              ),
-              TextButton(onPressed: sendRequest,
-                child: const Text("Send Feedback"),)
-              ///////////////////////
-            ],
+              ],
+            ),
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 
+  void _showMessageComposeModal(BuildContext context, String placeName) {
+    final TextEditingController msgController = TextEditingController();
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final accent = isDark ? const Color(0xFF7B96FF) : const Color(0xFF4F6EF7);
+    final surface = isDark ? const Color(0xFF1C1F2E) : Colors.white;
+    final textPrimary = isDark ? const Color(0xFFE8EAF6) : const Color(0xFF1A1A2E);
+    final textSecondary = isDark ? const Color(0xFFB0B3C6) : const Color(0xFF8A8FA8);
+    final inputFill = isDark ? const Color(0xFF252840) : const Color(0xFFF7F8FC);
 
-
-
-
-
-
-
-  buildSlider() {
-    return Container(
-      padding: EdgeInsets.only(left: 20),
-      height: 250.0,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        primary: false,
-        itemCount: places[index]["img"].length,
-        itemBuilder: (BuildContext context, int idx) {
-          Map place = places[index];
-          return Padding(
-            padding: EdgeInsets.only(right: 10.0),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(10.0),
-              child: Image.asset(
-                "${place["img"][idx]}",
-                height: 350.0,
-                width: MediaQuery.of(context).size.width - 40.0,
-                fit: BoxFit.cover,
-              ),
-            ),
-          );
-        },
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
+      builder: (ctx) {
+        return Padding(
+          padding: EdgeInsets.only(
+            left: 24,
+            right: 24,
+            top: 24,
+            bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: textSecondary.withValues(alpha: 0.3),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Send Message to $placeName Host',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  color: textPrimary,
+                  fontFamily: 'Poppins',
+                ),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                'Ask a question or inquire about tour details',
+                style: TextStyle(fontSize: 13, color: textSecondary, fontFamily: 'Poppins'),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: msgController,
+                maxLines: 4,
+                style: TextStyle(color: textPrimary, fontFamily: 'Poppins'),
+                decoration: InputDecoration(
+                  hintText: 'Write your message here...',
+                  hintStyle: TextStyle(color: textSecondary, fontSize: 14),
+                  filled: true,
+                  fillColor: inputFill,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: BorderSide.none,
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: BorderSide(color: accent, width: 2),
+                  ),
+                  contentPadding: const EdgeInsets.all(16),
+                ),
+              ),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    Navigator.pop(ctx);
+                    _showMessageSentModal(context);
+                  },
+                  icon: const Icon(Icons.send_rounded, size: 18),
+                  label: const Text(
+                    'Send Message',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                      fontFamily: 'Poppins',
+                    ),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: accent,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(50),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

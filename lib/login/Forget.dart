@@ -12,7 +12,7 @@ class _ForgetState extends State<Forget> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("hello"),
+        title: const Text("hello"),
       ),
     );
   }

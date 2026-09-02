@@ -5,7 +5,7 @@ const int unixEpoch = 719163;
 const int dayMilliSec = 86400000;
 
 Iterable<Map<String, dynamic>> getHolidays(int year) {
-  var bh = new Bahirehasab.named(year: year);
+  var bh = Bahirehasab.named(year: year);
   var tensae = bh.getSingleBeal("ትንሳኤ");
   var seklet = bh.getSingleBeal("ስቅለት");
 

@@ -3,10 +3,12 @@ import 'package:get/get.dart';
 
 class HomePage extends StatelessWidget {
   final List locale = [
-    {'name': 'ENGLISH', 'locale': Locale('en', 'US')},
-    {'name': 'ಕನ್ನಡ', 'locale': Locale('kn', 'IN')},
-    {'name': 'हिंदी', 'locale': Locale('hi', 'IN')},
+    {'name': 'ENGLISH', 'locale': const Locale('en', 'US')},
+    {'name': 'ಕನ್ನಡ', 'locale': const Locale('kn', 'IN')},
+    {'name': 'हिंदी', 'locale': const Locale('hi', 'IN')},
   ];
+
+  const HomePage({super.key});
 
   updateLanguage(Locale locale) {
     Get.back();
@@ -18,16 +20,15 @@ class HomePage extends StatelessWidget {
         context: context,
         builder: (builder) {
           return AlertDialog(
-            title: Text('Choose Your Language'),
-            content: Container(
+            title: const Text('Choose Your Language'),
+            content: SizedBox(
               width: double.maxFinite,
               child: ListView.separated(
                   shrinkWrap: true,
                   itemBuilder: (context, index) {
                     return Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: 
-                      GestureDetector(
+                      child: GestureDetector(
                         child: Text(locale[index]['name']),
                         onTap: () {
                           print(locale[index]['name']);
@@ -37,7 +38,7 @@ class HomePage extends StatelessWidget {
                     );
                   },
                   separatorBuilder: (context, index) {
-                    return Divider(
+                    return const Divider(
                       color: Colors.blue,
                     );
                   },
@@ -58,21 +59,21 @@ class HomePage extends StatelessWidget {
           children: [
             Text(
               'hello'.tr,
-              style: TextStyle(fontSize: 15),
+              style: const TextStyle(fontSize: 15),
             ),
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
             Text(
               'message'.tr,
-              style: TextStyle(fontSize: 20),
+              style: const TextStyle(fontSize: 20),
             ),
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
             Text(
               'subscribe'.tr,
-              style: TextStyle(fontSize: 20),
+              style: const TextStyle(fontSize: 20),
             ),
             ElevatedButton(
                 onPressed: () {

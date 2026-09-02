@@ -12,58 +12,58 @@ class EthiopianCalendar {
   String? day_name;
 
   EthiopianCalendar({this.year, this.month, this.day}) {
-    this.month_name = months[this.month! - 1];
-    this.holiday_name =
-        getHoliday(months[this.month! - 1], this.day, this.year);
-    this.isHoliday = holiday_name != "" ? true : false;
+    month_name = months[month! - 1];
+    holiday_name =
+        getHoliday(months[month! - 1], day, year);
+    isHoliday = holiday_name != "" ? true : false;
   }
 
   EthiopianCalendar.now() {
     var fixed = fixedFromUnix(DateTime.now().millisecondsSinceEpoch);
-    this.year = ((4 * (fixed - ethiopicEpoch) + 1463) ~/ 1461);
-    this.month = (((fixed - fixedFromEthiopic(this.year!, 1, 1)) ~/ 30) + 1);
-    this.day = fixed + 1 - fixedFromEthiopic(this.year!, this.month!, 1);
-    this.month_name = months[(this.month! - 1) % 13];
-    this.holiday_name =
-        getHoliday(months[this.month! - 1], this.day, this.year);
-    this.isHoliday = holiday_name != "" ? true : false;
+    year = ((4 * (fixed - ethiopicEpoch) + 1463) ~/ 1461);
+    month = (((fixed - fixedFromEthiopic(year!, 1, 1)) ~/ 30) + 1);
+    day = fixed + 1 - fixedFromEthiopic(year!, month!, 1);
+    month_name = months[(month! - 1) % 13];
+    holiday_name =
+        getHoliday(months[month! - 1], day, year);
+    isHoliday = holiday_name != "" ? true : false;
 
-    var gc = this.toGC();
-    this.day_name = dayss[getDayName(gc.month, gc.day, gc.year)];
+    var gc = toGC();
+    day_name = dayss[getDayName(gc.month, gc.day, gc.year)];
   }
 
   GregorianCalendar toGC() {
-    return new GregorianCalendar(
+    return GregorianCalendar(
         year: DateTime.fromMillisecondsSinceEpoch(
-                dateToEpoch(this.year!, this.month!, this.day!))
+                dateToEpoch(year!, month!, day!))
             .year,
         month: DateTime.fromMillisecondsSinceEpoch(
-                dateToEpoch(this.year!, this.month!, this.day!))
+                dateToEpoch(year!, month!, day!))
             .month,
         day: DateTime.fromMillisecondsSinceEpoch(
-                dateToEpoch(this.year!, this.month!, this.day!))
+                dateToEpoch(year!, month!, day!))
             .day);
   }
 
   EthiopianCalendar nextMonth() {
-    var isLastMonth = this.month == 13 || (this.month == 12 && this.day! > 6);
-    return new EthiopianCalendar(
-        year: isLastMonth ? this.year! + 1 : this.year,
-        month: isLastMonth ? 1 : this.month! + 1,
-        day: this.day);
+    var isLastMonth = month == 13 || (month == 12 && day! > 6);
+    return EthiopianCalendar(
+        year: isLastMonth ? year! + 1 : year,
+        month: isLastMonth ? 1 : month! + 1,
+        day: day);
   }
 
   EthiopianCalendar previousMonth() {
-    var isFirstMonth = this.month == 1;
-    return new EthiopianCalendar(
-        year: isFirstMonth ? this.year! - 1 : this.year,
-        month: isFirstMonth ? (this.day! > 6 ? 12 : 13) : this.month! - 1,
-        day: this.day);
+    var isFirstMonth = month == 1;
+    return EthiopianCalendar(
+        year: isFirstMonth ? year! - 1 : year,
+        month: isFirstMonth ? (day! > 6 ? 12 : 13) : month! - 1,
+        day: day);
   }
 
   EthiopianCalendar nextYear() {
     return EthiopianCalendar(
-        year: this.year! + 1, month: this.month, day: this.day);
+        year: year! + 1, month: month, day: day);
   }
 
   // thisYear() {
@@ -75,18 +75,18 @@ class EthiopianCalendar {
 
   EthiopianCalendar currentDay() {
     return EthiopianCalendar(
-        year: this.year!, month: this.month, day: this.day);
+        year: year!, month: month, day: day);
   }
 
   EthiopianCalendar previousYear() {
     return EthiopianCalendar(
-        year: this.year! - 1, month: this.month, day: this.day);
+        year: year! - 1, month: month, day: day);
   }
 
   int daysInMonth() {
-    if (this.month == 13) {
+    if (month == 13) {
       // In a leap year, the 13th month has 6 days
-      return isLeapYear(this.year!) ? 6 : 5;
+      return isLeapYear(year!) ? 6 : 5;
     } else {
       // All other months have 30 days
       return 30;

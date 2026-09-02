@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 class Searchbar extends StatefulWidget {
@@ -9,14 +8,14 @@ class Searchbar extends StatefulWidget {
 }
 
 class _SearchbarState extends State<Searchbar> {
-  final TextEditingController _searchControl = new TextEditingController();
+  final TextEditingController _searchControl = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.blueGrey[50],
-        borderRadius: BorderRadius.all(
+        borderRadius: const BorderRadius.all(
           Radius.circular(5.0),
         ),
       ),
@@ -26,15 +25,15 @@ class _SearchbarState extends State<Searchbar> {
           color: Colors.blueGrey[300],
         ),
         decoration: InputDecoration(
-          contentPadding: EdgeInsets.all(10.0),
+          contentPadding: const EdgeInsets.all(10.0),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(5.0),
-            borderSide: BorderSide(
+            borderSide: const BorderSide(
               color: Colors.white,
             ),
           ),
           enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(
+            borderSide: const BorderSide(
               color: Colors.white,
             ),
             borderRadius: BorderRadius.circular(5.0),
@@ -53,6 +52,5 @@ class _SearchbarState extends State<Searchbar> {
         controller: _searchControl,
       ),
     );
-
   }
 }

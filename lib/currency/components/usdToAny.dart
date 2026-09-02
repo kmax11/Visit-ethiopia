@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 import '../functions/fetchRates.dart';
@@ -24,24 +23,25 @@ class _UsdToAnyState extends State<UsdToAny> {
     return Card(
       child: Container(
           // width: w / 3,
-          padding: EdgeInsets.all(20),
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start,
+          padding: const EdgeInsets.all(20),
+          child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
+                const Text(
                   'USD to Any Currency',
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
 
                 //TextFields for Entering USD
                 TextFormField(
-                  key: ValueKey('usd'),
+                  key: const ValueKey('usd'),
                   controller: usdController,
-                  decoration: InputDecoration(hintText: 'Enter USD'),
+                  decoration: const InputDecoration(hintText: 'Enter USD'),
                   keyboardType: TextInputType.number,
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 Row(
                   children: [
                     //Future Builder for getting all currencies for dropdown list
@@ -72,7 +72,7 @@ class _UsdToAnyState extends State<UsdToAny> {
                         }).toList(),
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 10,
                     ),
 
@@ -81,28 +81,24 @@ class _UsdToAnyState extends State<UsdToAny> {
                       child: ElevatedButton(
                         onPressed: () {
                           setState(() {
-                            answer = usdController.text +
-                                ' USD = ' +
-                                convertusd(widget.rates, usdController.text,
-                                    dropdownValue) +
-                                ' ' +
-                                dropdownValue;
+                            answer =
+                                '${usdController.text} USD = ${convertusd(widget.rates, usdController.text, dropdownValue)} $dropdownValue';
                           });
                         },
-                        child: Text('Convert'),
                         style: ButtonStyle(
-                            backgroundColor: MaterialStateProperty.all(
+                            backgroundColor: WidgetStateProperty.all(
                                 Theme.of(context).primaryColor)),
+                        child: const Text('Convert'),
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 10,
                     ),
                   ],
                 ),
 
                 //Final Output
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 Container(child: Text(answer))
               ])),
     );

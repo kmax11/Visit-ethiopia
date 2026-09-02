@@ -7,23 +7,26 @@ class Constants{
 
   //Color of a theme
 
-  static Color lightPrimary = Color(0xfffcfcff);
+  static Color lightPrimary = const Color(0xfffcfcff);
   static Color darkPrimary = Colors.black;
   static Color lightAccent = Colors.blueGrey.shade900;
   static Color darkAccent = Colors.white;
-  static Color lightBG = Color(0xfffcfcff);
+  static Color lightBG = const Color(0xfffcfcff);
   static Color darkBG = Colors.black;
   static Color badgeColor = Colors.red;
 
   // light Theme
 
   static ThemeData lightTheme = ThemeData(
-    backgroundColor: lightBG,
+    colorScheme: ColorScheme.light(
+      surface: lightBG,
+      primary: lightPrimary,
+    ),
     primaryColor: lightPrimary,
     // accentColor: lightAccent,
     // buttonColor: lightAccent,
     scaffoldBackgroundColor: lightBG,
-    appBarTheme: AppBarTheme(
+    appBarTheme: const AppBarTheme(
       elevation: 0,
       // textTheme: TextTheme(
         // headline6: TextStyle(
@@ -38,12 +41,15 @@ class Constants{
 
   static ThemeData darkTheme = ThemeData(
     brightness: Brightness.dark,
-    backgroundColor: darkBG,
+    colorScheme: ColorScheme.dark(
+      surface: darkBG,
+      primary: darkPrimary,
+    ),
     primaryColor: darkPrimary,
     // accentColor: darkAccent,
     scaffoldBackgroundColor: darkBG,
     // cursorColor: darkAccent,
-    appBarTheme: AppBarTheme(
+    appBarTheme: const AppBarTheme(
       elevation: 0,
       // textTheme: TextTheme(
       //   headline6: TextStyle(
