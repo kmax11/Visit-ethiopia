@@ -1,16 +1,74 @@
-# visitethiopia
+# Visit Ethiopia
 
-A new Flutter project.
+A Flutter travel app for discovering Ethiopia’s culture, history, nature, and popular destinations.
+
+## Features
+
+- Explore Ethiopian destinations
+- View destination images
+- Find places using Google Maps
+- Save favorite destinations
+- Switch between light and dark mode
+- Support for multiple languages
+
+## Destinations
+
+The app includes places such as:
+
+- Lalibela
+- Axum
+- Gondar
+- Harar
+- Danakil Depression
+- Simien Mountains
+- Bale Mountains
+- Omo Valley
+- Addis Ababa
+
+## Technologies
+
+- Flutter
+- Dart
+- GetX
+- Google Maps
+- Material 3
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+### Requirements
 
-A few resources to get you started if this is your first Flutter project:
+- Flutter SDK
+- Dart SDK
+- Android Studio or Xcode
+- Google Maps API key for map features
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+### Run the project
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+```bash
+git clone https://github.com/kmax11/Visit-ethiopia.git
+cd Visit-ethiopia
+flutter pub get
+flutter run
+```
+
+## Development
+
+Run the following commands before submitting changes:
+
+```bash
+flutter analyze
+flutter test
+dart format .
+```
+
+## Contributing
+
+1. Fork the repository.
+2. Create a feature branch.
+3. Make your changes.
+4. Test the application.
+5. Open a pull request.
+
+## License
+
+This project is currently intended for private development and educational use.
