@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import '../calendar/models/calendar/EthiopianCalendar.dart';
+import '../theme/app_theme.dart';
 
 class CalendarPage extends StatefulWidget {
   const CalendarPage({super.key});
@@ -9,42 +11,20 @@ class CalendarPage extends StatefulWidget {
 
 class _CalendarPageState extends State<CalendarPage>
     with SingleTickerProviderStateMixin {
-  static const Color _accent = Color(0xFF4F6EF7);
-  static const Color _textPrimary = Color(0xFF1A1A2E);
-  static const Color _textSecondary = Color(0xFF8A8FA8);
-
   EthiopianCalendar _calendar = EthiopianCalendar.now();
   final EthiopianCalendar _today = EthiopianCalendar.now();
 
   final List<String> _weekdayNames = [
-    'Sun',
-    'Mon',
-    'Tue',
-    'Wed',
-    'Thu',
-    'Fri',
-    'Sat'
+    'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'
   ];
 
-  // Gregorian month names for subtitle
   final List<String> _gregMonths = [
-    'January',
-    'February',
-    'March',
-    'April',
-    'May',
-    'June',
-    'July',
-    'August',
-    'September',
-    'October',
-    'November',
-    'December'
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
   ];
 
   late AnimationController _animController;
   late Animation<double> _fadeAnim;
-  int _slideDir = 0; // -1 left, 1 right, 0 init
 
   @override
   void initState() {
@@ -68,12 +48,7 @@ class _CalendarPageState extends State<CalendarPage>
     _animController.reverse();
     await Future.delayed(const Duration(milliseconds: 180));
     setState(() {
-      if (dir > 0) {
-        _calendar = _calendar.nextMonth();
-      } else {
-        _calendar = _calendar.previousMonth();
-      }
-      _slideDir = dir;
+      _calendar = dir > 0 ? _calendar.nextMonth() : _calendar.previousMonth();
     });
     _animController.forward();
   }
@@ -87,27 +62,22 @@ class _CalendarPageState extends State<CalendarPage>
     }
   }
 
-  bool _isToday(int day) {
-    return _calendar.year == _today.year &&
-        _calendar.month == _today.month &&
-        day == _today.day;
-  }
+  bool _isToday(int day) =>
+      _calendar.year == _today.year &&
+      _calendar.month == _today.month &&
+      day == _today.day;
 
   int _getGregorianDay(int ethDay) {
     try {
       final eth = EthiopianCalendar(
-        year: _calendar.year,
-        month: _calendar.month,
-        day: ethDay,
-      );
-      final gc = eth.toGC();
-      return gc.day ?? ethDay;
+          year: _calendar.year, month: _calendar.month, day: ethDay);
+      return eth.toGC().day ?? ethDay;
     } catch (_) {
       return ethDay;
     }
   }
 
-  List<Widget> _buildCalendarCells() {
+  List<Widget> _buildCalendarCells(AppColors c) {
     List<Widget> cells = [];
     int daysInMonth = _calendar.daysInMonth();
     int firstDayOfWeek = _calendar.firstDayOfWeek();
@@ -122,35 +92,41 @@ class _CalendarPageState extends State<CalendarPage>
           style: TextStyle(
             fontWeight: FontWeight.w600,
             fontSize: 12,
-            color: isWeekend ? _accent.withValues(alpha: 0.7) : _textSecondary,
+            fontFamily: AppColors.font,
+            color: isWeekend
+                ? c.accent.withValues(alpha: 0.7)
+                : c.textSecondary,
           ),
         ),
       ));
     }
 
-    // Previous month filler days
+    // Previous month fillers
     int prevMonthDays = _calendar.previousMonth().daysInMonth();
-    for (int i = prevMonthDays - prevMonthOffset + 1; i <= prevMonthDays; i++) {
+    for (int i = prevMonthDays - prevMonthOffset + 1;
+        i <= prevMonthDays;
+        i++) {
       cells.add(_DayCell(
         ethDay: i,
         gregDay: null,
         isToday: false,
         isCurrentMonth: false,
+        colors: c,
       ));
     }
 
     // Current month days
     for (int i = 1; i <= daysInMonth; i++) {
-      final gregDay = _getGregorianDay(i);
       cells.add(_DayCell(
         ethDay: i,
-        gregDay: gregDay,
+        gregDay: _getGregorianDay(i),
         isToday: _isToday(i),
         isCurrentMonth: true,
+        colors: c,
       ));
     }
 
-    // Next month filler days
+    // Next month fillers
     int filled = prevMonthOffset + daysInMonth;
     int totalCells = ((filled / 7).ceil()) * 7;
     for (int i = 1; i <= totalCells - filled; i++) {
@@ -159,6 +135,7 @@ class _CalendarPageState extends State<CalendarPage>
         gregDay: null,
         isToday: false,
         isCurrentMonth: false,
+        colors: c,
       ));
     }
 
@@ -167,188 +144,211 @@ class _CalendarPageState extends State<CalendarPage>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        centerTitle: true,
-        leading: IconButton(
-          icon: Container(
-            width: 36,
-            height: 36,
-            decoration: BoxDecoration(
-              color: const Color(0xFFF7F8FC),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: const Icon(Icons.arrow_back_ios_rounded,
-                size: 16, color: _textPrimary),
-          ),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        title: const Text(
-          'Ethiopian Calendar',
-          style: TextStyle(
-            color: _textPrimary,
-            fontWeight: FontWeight.w700,
-            fontSize: 18,
-          ),
-        ),
-      ),
-      body: Column(
-        children: [
-          const SizedBox(height: 8),
+    return Obx(() {
+      // Re-resolve colors whenever theme changes
+      Get.find<AppThemeController>().isDark; // reactive read
+      final c = AppColors.of(context);
 
-          // Month Navigation
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                GestureDetector(
-                  onTap: () => _changeMonth(-1),
-                  child: Container(
-                    width: 42,
-                    height: 42,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFF7F8FC),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: const Icon(Icons.chevron_left_rounded,
-                        color: _textPrimary, size: 26),
-                  ),
-                ),
-                FadeTransition(
-                  opacity: _fadeAnim,
-                  child: Column(
-                    children: [
-                      Text(
-                        '${_calendar.month_name ?? ''} ${_calendar.year ?? ''}',
-                        style: const TextStyle(
-                          color: _textPrimary,
-                          fontWeight: FontWeight.w700,
-                          fontSize: 22,
-                        ),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        _gregorianSubtitle(),
-                        style: const TextStyle(
-                          color: _textSecondary,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                GestureDetector(
-                  onTap: () => _changeMonth(1),
-                  child: Container(
-                    width: 42,
-                    height: 42,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFF7F8FC),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: const Icon(Icons.chevron_right_rounded,
-                        color: _textPrimary, size: 26),
-                  ),
-                ),
-              ],
+      return Scaffold(
+        backgroundColor: c.bg,
+        appBar: AppBar(
+          backgroundColor: c.appBar,
+          elevation: 0,
+          centerTitle: true,
+          leading: IconButton(
+            icon: Container(
+              width: 36,
+              height: 36,
+              decoration: BoxDecoration(
+                color: c.surface,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: c.divider),
+              ),
+              child: Icon(Icons.arrow_back_ios_rounded,
+                  size: 16, color: c.textPrimary),
+            ),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+          title: Text(
+            'calendar'.tr,
+            style: TextStyle(
+              color: c.textPrimary,
+              fontWeight: FontWeight.w700,
+              fontSize: 18,
+              fontFamily: AppColors.font,
             ),
           ),
+        ),
+        body: Column(
+          children: [
+            const SizedBox(height: 8),
 
-          const SizedBox(height: 20),
+            // ── Month navigation ──────────────────────────────────────
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  _NavButton(
+                    icon: Icons.chevron_left_rounded,
+                    colors: c,
+                    onTap: () => _changeMonth(-1),
+                  ),
+                  FadeTransition(
+                    opacity: _fadeAnim,
+                    child: Column(
+                      children: [
+                        Text(
+                          '${_calendar.month_name ?? ''} ${_calendar.year ?? ''}',
+                          style: TextStyle(
+                            color: c.textPrimary,
+                            fontWeight: FontWeight.w700,
+                            fontSize: 22,
+                            fontFamily: AppColors.font,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          _gregorianSubtitle(),
+                          style: TextStyle(
+                            color: c.textSecondary,
+                            fontSize: 13,
+                            fontFamily: AppColors.font,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  _NavButton(
+                    icon: Icons.chevron_right_rounded,
+                    colors: c,
+                    onTap: () => _changeMonth(1),
+                  ),
+                ],
+              ),
+            ),
 
-          // Divider
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20),
-            child: Divider(color: Color(0xFFEEEFF3), height: 1),
-          ),
-          const SizedBox(height: 12),
+            const SizedBox(height: 20),
 
-          // Calendar Grid
-          Expanded(
-            child: FadeTransition(
-              opacity: _fadeAnim,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: GridView.count(
-                  crossAxisCount: 7,
-                  childAspectRatio: 0.9,
-                  physics: const NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  children: _buildCalendarCells(),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Divider(color: c.divider, height: 1),
+            ),
+            const SizedBox(height: 12),
+
+            // ── Calendar grid ─────────────────────────────────────────
+            Expanded(
+              child: FadeTransition(
+                opacity: _fadeAnim,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: GridView.count(
+                    crossAxisCount: 7,
+                    childAspectRatio: 0.9,
+                    physics: const NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    children: _buildCalendarCells(c),
+                  ),
                 ),
               ),
             ),
-          ),
 
-          // Today chip
-          Container(
-            margin: const EdgeInsets.only(bottom: 24, top: 8),
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            decoration: BoxDecoration(
-              color: _accent.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(50),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Icon(Icons.today_rounded, color: _accent, size: 16),
-                const SizedBox(width: 8),
-                Text(
-                  'Today: ${_today.month_name ?? ''} ${_today.day}, ${_today.year}',
-                  style: const TextStyle(
-                    color: _accent,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 13,
+            // ── Today chip ────────────────────────────────────────────
+            Container(
+              margin: const EdgeInsets.only(bottom: 24, top: 8),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              decoration: BoxDecoration(
+                color: c.accent.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(50),
+                border: Border.all(color: c.accent.withValues(alpha: 0.2)),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.today_rounded, color: c.accent, size: 16),
+                  const SizedBox(width: 8),
+                  Text(
+                    '${'today'.tr}: ${_today.month_name ?? ''} ${_today.day}, ${_today.year}',
+                    style: TextStyle(
+                      color: c.accent,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 13,
+                      fontFamily: AppColors.font,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: _accent,
-        foregroundColor: Colors.white,
-        elevation: 4,
-        onPressed: () {},
-        child: const Icon(Icons.add_rounded, size: 28),
+          ],
+        ),
+        floatingActionButton: FloatingActionButton(
+          backgroundColor: c.accent,
+          foregroundColor: Colors.white,
+          elevation: 4,
+          onPressed: () {},
+          child: const Icon(Icons.add_rounded, size: 28),
+        ),
+      );
+    });
+  }
+}
+
+// ─── Nav arrow button ─────────────────────────────────────────────────────────
+class _NavButton extends StatelessWidget {
+  final IconData icon;
+  final AppColors colors;
+  final VoidCallback onTap;
+
+  const _NavButton({
+    required this.icon,
+    required this.colors,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 42,
+        height: 42,
+        decoration: BoxDecoration(
+          color: colors.surface,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: colors.divider),
+        ),
+        child: Icon(icon, color: colors.textPrimary, size: 26),
       ),
     );
   }
 }
 
-// ─── Day Cell Widget ──────────────────────────────────────────────────────────
+// ─── Day cell ─────────────────────────────────────────────────────────────────
 class _DayCell extends StatelessWidget {
   final int ethDay;
   final int? gregDay;
   final bool isToday;
   final bool isCurrentMonth;
+  final AppColors colors;
 
   const _DayCell({
     required this.ethDay,
     required this.gregDay,
     required this.isToday,
     required this.isCurrentMonth,
+    required this.colors,
   });
-
-  static const Color _accent = Color(0xFF4F6EF7);
-  static const Color _textPrimary = Color(0xFF1A1A2E);
-  static const Color _textSecondary = Color(0xFF8A8FA8);
 
   @override
   Widget build(BuildContext context) {
-    Color dayColor;
+    final Color dayColor;
     if (isToday) {
       dayColor = Colors.white;
     } else if (!isCurrentMonth) {
-      dayColor = _textSecondary.withValues(alpha: 0.35);
+      dayColor = colors.textSecondary.withValues(alpha: 0.35);
     } else {
-      dayColor = _textPrimary;
+      dayColor = colors.textPrimary;
     }
 
     return Center(
@@ -357,11 +357,11 @@ class _DayCell extends StatelessWidget {
         height: 44,
         decoration: isToday
             ? BoxDecoration(
-                color: _accent,
+                color: colors.accent,
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(
-                    color: _accent.withValues(alpha: 0.35),
+                    color: colors.accent.withValues(alpha: 0.35),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),
@@ -375,6 +375,7 @@ class _DayCell extends StatelessWidget {
               '$ethDay',
               style: TextStyle(
                 fontSize: 15,
+                fontFamily: AppColors.font,
                 fontWeight: isToday ? FontWeight.w700 : FontWeight.w500,
                 color: dayColor,
               ),
@@ -386,7 +387,7 @@ class _DayCell extends StatelessWidget {
                   fontSize: 9,
                   color: isToday
                       ? Colors.white.withValues(alpha: 0.75)
-                      : _textSecondary.withValues(alpha: 0.65),
+                      : colors.textSecondary.withValues(alpha: 0.65),
                 ),
               ),
           ],
