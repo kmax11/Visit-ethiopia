@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import '../map/map.dart';
 import '../util/places.dart';
-import 'package:visitethiopia/main.dart';
+import 'package:visitethiopia/main.dart'; // FavoritesController
+import 'package:visitethiopia/theme/app_theme.dart';
 import 'package:get/get.dart';
 import 'hotel_list.dart';
 
@@ -35,7 +36,7 @@ class _DetailsState extends State<Details> {
     final images = place['img'] as List;
 
     return Obx(() {
-      final themeCtrl = Get.find<ThemeController>();
+      final themeCtrl = Get.find<AppThemeController>();
       final favCtrl = Get.find<FavoritesController>();
       final isDark = themeCtrl.isDark;
       final accent = isDark ? const Color(0xFF7B96FF) : const Color(0xFF4F6EF7);
@@ -143,7 +144,7 @@ class _DetailsState extends State<Details> {
                           children: [
                             Expanded(
                               child: Text(
-                                '${place["name"]}',
+                                '${place["name"]}'.tr,
                                 style: TextStyle(fontWeight: FontWeight.w700, fontSize: 24, color: textPrimary, height: 1.2, fontFamily: 'Poppins'),
                               ),
                             ),
@@ -174,7 +175,7 @@ class _DetailsState extends State<Details> {
                           children: [
                             Icon(Icons.location_on_rounded, size: 15, color: accent),
                             const SizedBox(width: 4),
-                            Text('${place["location"]}', style: TextStyle(fontSize: 13, color: textSecondary)),
+                            Text('${place["location"]}'.tr, style: TextStyle(fontSize: 13, color: textSecondary)),
                             const Spacer(),
                             Row(children: [
                               for (int i = 0; i < 5; i++)
@@ -218,7 +219,7 @@ class _DetailsState extends State<Details> {
                         Text('scheduleOverview'.tr,
                           style: TextStyle(fontWeight: FontWeight.w700, fontSize: 17, color: textPrimary, fontFamily: 'Poppins')),
                         const SizedBox(height: 10),
-                        Text('${place["details"]}',
+                        Text('${(place["detailsKey"] ?? place["details"])}'.tr,
                           style: TextStyle(fontWeight: FontWeight.w400, fontSize: 14, color: textSecondary, height: 1.6)),
 
                         const SizedBox(height: 32),
@@ -257,7 +258,7 @@ class _DetailsState extends State<Details> {
                               }
                             },
                             icon: const Icon(Icons.send_rounded, size: 16),
-                            label: const Text('Submit', style: TextStyle(fontFamily: 'Poppins', fontSize: 13, fontWeight: FontWeight.w600)),
+                            label: Text('submit'.tr, style: const TextStyle(fontFamily: 'Poppins', fontSize: 13, fontWeight: FontWeight.w600)),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: accent,
                               foregroundColor: Colors.white,
@@ -373,7 +374,7 @@ class _DetailsState extends State<Details> {
                 ),
                 const SizedBox(height: 20),
                 Text(
-                  'Message Sent!',
+                  'messageSent'.tr,
                   style: TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.w700,
@@ -384,7 +385,7 @@ class _DetailsState extends State<Details> {
                 ),
                 const SizedBox(height: 10),
                 Text(
-                  'Your message has been sent successfully. We will get back to you shortly!',
+                  'messageSentDesc'.tr,
                   style: TextStyle(
                     fontSize: 14,
                     color: textSecondary,
@@ -404,9 +405,9 @@ class _DetailsState extends State<Details> {
                       padding: const EdgeInsets.symmetric(vertical: 14),
                     ),
                     onPressed: () => Navigator.pop(ctx),
-                    child: const Text(
-                      'Done',
-                      style: TextStyle(
+                    child: Text(
+                      'done'.tr,
+                      style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
                         fontFamily: 'Poppins',
@@ -462,7 +463,7 @@ class _DetailsState extends State<Details> {
               ),
               const SizedBox(height: 16),
               Text(
-                'Send Message to $placeName Host',
+                '${'sendMessageTo'.tr} ${placeName.tr} ${'host'.tr}',
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w700,
@@ -472,7 +473,7 @@ class _DetailsState extends State<Details> {
               ),
               const SizedBox(height: 6),
               Text(
-                'Ask a question or inquire about tour details',
+                'askQuestion'.tr,
                 style: TextStyle(fontSize: 13, color: textSecondary, fontFamily: 'Poppins'),
               ),
               const SizedBox(height: 16),
@@ -481,7 +482,7 @@ class _DetailsState extends State<Details> {
                 maxLines: 4,
                 style: TextStyle(color: textPrimary, fontFamily: 'Poppins'),
                 decoration: InputDecoration(
-                  hintText: 'Write your message here...',
+                  hintText: 'writeMessageHint'.tr,
                   hintStyle: TextStyle(color: textSecondary, fontSize: 14),
                   filled: true,
                   fillColor: inputFill,
@@ -506,9 +507,9 @@ class _DetailsState extends State<Details> {
                     _showMessageSentModal(context);
                   },
                   icon: const Icon(Icons.send_rounded, size: 18),
-                  label: const Text(
-                    'Send Message',
-                    style: TextStyle(
+                  label: Text(
+                    'sendMessage'.tr,
+                    style: const TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w600,
                       fontFamily: 'Poppins',

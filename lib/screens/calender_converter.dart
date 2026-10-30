@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import '../calendar/models/calendar/EthiopianCalendar.dart';
 import '../calendar/models/calendar/GregorianCalendar.dart';
@@ -48,7 +49,7 @@ class _CalendarConverterState extends State<CalendarConverter> {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
-        title: const Text('Calendar Converter'),
+        title: Text('calendarconverter'.tr),
       ),
       body: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
