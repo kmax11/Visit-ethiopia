@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:visitethiopia/login/Forget.dart';
 import 'package:visitethiopia/login/signup.dart';
-import 'package:visitethiopia/main.dart';
+import 'package:visitethiopia/theme/app_theme.dart';
 import 'package:visitethiopia/screens/MainScreen.dart';
 
 class Login extends StatefulWidget {
@@ -50,7 +50,7 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      final themeCtrl = Get.find<ThemeController>();
+      final themeCtrl = Get.find<AppThemeController>();
       final isDark = themeCtrl.isDark;
       final accent = isDark ? const Color(0xFF7B96FF) : const Color(0xFF4F6EF7);
       final cardBg = isDark ? const Color(0xFF1C1F2E) : Colors.white;
