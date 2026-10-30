@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:visitethiopia/login/signin.dart';
-import 'package:visitethiopia/main.dart';
+import 'package:visitethiopia/theme/app_theme.dart';
 import 'package:visitethiopia/screens/about.dart';
 import 'package:visitethiopia/screens/calendar.dart';
 import 'package:visitethiopia/screens/calender_converter.dart';
@@ -73,7 +73,7 @@ class _HomeState extends State<Home> {
           ),
           // Dark mode toggle
           Obx(() {
-            final ctrl = Get.find<ThemeController>();
+            final ctrl = Get.find<AppThemeController>();
             return IconButton(
               icon: Icon(
                 ctrl.isDark
@@ -114,7 +114,7 @@ class _HomeState extends State<Home> {
                   ),
                 ),
                 Text(
-                  'See all',
+                  'seeAll'.tr,
                   style: TextStyle(
                     fontSize: 13,
                     color: accent,
@@ -133,7 +133,7 @@ class _HomeState extends State<Home> {
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
             child: Text(
-              'Explore by category',
+              'exploreByCategory'.tr,
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
@@ -227,7 +227,7 @@ class _HomeState extends State<Home> {
           ),
           const SizedBox(height: 8),
           Text(
-            'Discover breathtaking landscapes, ancient history & vibrant culture.',
+            'heroSubtitle'.tr,
             style: TextStyle(
               fontSize: 13,
               color: textSecondary,
@@ -289,7 +289,7 @@ class _HomeState extends State<Home> {
                       ],
               ),
               child: Text(
-                Constants.category[index],
+                (Constants.category[index] as String).tr,
                 style: TextStyle(
                   fontSize: 13,
                   fontWeight:
@@ -483,7 +483,7 @@ class _HomeState extends State<Home> {
             Padding(
               padding: const EdgeInsets.all(16),
               child: Obx(() {
-                final ctrl = Get.find<ThemeController>();
+                final ctrl = Get.find<AppThemeController>();
                 return GestureDetector(
                   onTap: () => ctrl.toggleTheme(),
                   child: Container(
@@ -563,7 +563,7 @@ class _HomeState extends State<Home> {
       builder: (_) {
         return AlertDialog(
           title: Text(
-            'Choose Language',
+            'chooseLanguage'.tr,
             style: TextStyle(
               fontFamily: 'Poppins',
               fontWeight: FontWeight.w700,
