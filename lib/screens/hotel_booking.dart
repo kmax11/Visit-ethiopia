@@ -66,7 +66,7 @@ class _HotelBookingPageState extends State<HotelBookingPage> {
     if (!_formKey.currentState!.validate()) return;
     if (_checkIn == null || _checkOut == null) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: const Text('Please select check-in and check-out dates.'),
+        content: Text('dateError'.tr),
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ));
@@ -74,7 +74,7 @@ class _HotelBookingPageState extends State<HotelBookingPage> {
     }
     if (_nights < 1) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: const Text('Check-out must be after check-in.'),
+        content: Text('dateOrderError'.tr),
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ));
@@ -162,14 +162,14 @@ class _HotelBookingPageState extends State<HotelBookingPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(widget.hotelName,
+                        Text(widget.hotelName.tr,
                           style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: textPrimary, fontFamily: 'Poppins'),
                           overflow: TextOverflow.ellipsis),
                         const SizedBox(height: 2),
                         Row(children: [
                           Icon(Icons.location_on_rounded, size: 12, color: accent),
                           const SizedBox(width: 3),
-                          Text(widget.placeName, style: TextStyle(fontSize: 12, color: textSecondary, fontFamily: 'Poppins')),
+                          Text(widget.placeName.tr, style: TextStyle(fontSize: 12, color: textSecondary, fontFamily: 'Poppins')),
                         ]),
                       ],
                     ),
@@ -187,7 +187,7 @@ class _HotelBookingPageState extends State<HotelBookingPage> {
             ),
 
             const SizedBox(height: 24),
-            _sectionTitle('Personal Details', textPrimary),
+            _sectionTitle('personalDetails'.tr, textPrimary),
             const SizedBox(height: 12),
 
             _buildInput(
@@ -198,7 +198,7 @@ class _HotelBookingPageState extends State<HotelBookingPage> {
               inputFill: inputFill,
               textPrimary: textPrimary,
               textSecondary: textSecondary,
-              validator: (v) => (v == null || v.isEmpty) ? 'Please enter your name' : null,
+              validator: (v) => (v == null || v.isEmpty) ? 'nameError'.tr : null,
             ),
             const SizedBox(height: 14),
             _buildInput(
@@ -211,8 +211,8 @@ class _HotelBookingPageState extends State<HotelBookingPage> {
               textSecondary: textSecondary,
               keyboardType: TextInputType.emailAddress,
               validator: (v) {
-                if (v == null || v.isEmpty) return 'Please enter your email';
-                if (!v.contains('@')) return 'Enter a valid email';
+                if (v == null || v.isEmpty) return 'emailError'.tr;
+                if (!v.contains('@')) return 'emailValidError'.tr;
                 return null;
               },
             ),
@@ -228,15 +228,15 @@ class _HotelBookingPageState extends State<HotelBookingPage> {
               keyboardType: TextInputType.number,
               hintText: 'guestsHint'.tr,
               validator: (v) {
-                if (v == null || v.isEmpty) return 'Enter number of guests';
+                if (v == null || v.isEmpty) return 'guestError'.tr;
                 final n = int.tryParse(v);
-                if (n == null || n < 1) return 'At least 1 guest';
+                if (n == null || n < 1) return 'guestMinError'.tr;
                 return null;
               },
             ),
 
             const SizedBox(height: 24),
-            _sectionTitle('Stay Dates', textPrimary),
+            _sectionTitle('stayDates'.tr, textPrimary),
             const SizedBox(height: 12),
 
             Row(

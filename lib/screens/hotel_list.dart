@@ -130,7 +130,7 @@ class HotelListPage extends StatelessWidget {
         title: Column(
           children: [
             Text(
-              '${'hotelsIn'.tr} $placeName',
+              '${'hotelsIn'.tr} ${placeName.tr}',
               style: TextStyle(color: textPrimary, fontWeight: FontWeight.w700, fontSize: 16, fontFamily: 'Poppins'),
             ),
             Text('selectHotel'.tr, style: TextStyle(color: textSecondary, fontSize: 11, fontFamily: 'Poppins')),
@@ -235,13 +235,13 @@ class HotelListPage extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(hotel['name'] as String,
+                      Text((hotel['name'] as String).tr,
                         style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: textPrimary, fontFamily: 'Poppins')),
                       const SizedBox(height: 4),
                       Row(children: [
                         Icon(Icons.location_on_rounded, size: 13, color: accent),
                         const SizedBox(width: 3),
-                        Text(placeName, style: TextStyle(fontSize: 12, color: textSecondary, fontFamily: 'Poppins')),
+                        Text(placeName.tr, style: TextStyle(fontSize: 12, color: textSecondary, fontFamily: 'Poppins')),
                       ]),
                       const SizedBox(height: 10),
                       Wrap(
@@ -253,7 +253,7 @@ class HotelListPage extends StatelessWidget {
                             child: Row(mainAxisSize: MainAxisSize.min, children: [
                               Icon(_amenityIcons[a] ?? Icons.check_circle_outline, size: 11, color: accent),
                               const SizedBox(width: 4),
-                              Text(a.toString(), style: TextStyle(fontSize: 11, color: accent, fontWeight: FontWeight.w600, fontFamily: 'Poppins')),
+                              Text(a.toString().tr, style: TextStyle(fontSize: 11, color: accent, fontWeight: FontWeight.w600, fontFamily: 'Poppins')),
                             ]),
                           );
                         }).toList(),
