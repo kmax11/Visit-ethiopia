@@ -132,7 +132,7 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
               left: 28,
               right: 28,
               child: Text(
-                "Discover Ethiopia's Soul",
+                'discoverSoul'.tr,
                 style: TextStyle(
                   color: Colors.white.withValues(alpha: 0.9),
                   fontSize: 28,
@@ -181,7 +181,7 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
                           ),
                         ),
                         Text(
-                          'Welcome back',
+                          'welcomeBack'.tr,
                           style: TextStyle(
                             color: textPrimary,
                             fontWeight: FontWeight.w700,
@@ -191,7 +191,7 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          'Sign in to continue exploring Ethiopia',
+                          'signInSubtitle'.tr,
                           style: TextStyle(
                             fontSize: 14,
                             color: textSecondary,
@@ -214,7 +214,7 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
                               const SizedBox(width: 10),
                               Expanded(
                                 child: Text(
-                                  'Demo Login: visit@gmail.com / visit',
+                                  'demoCredentials'.tr,
                                   style: TextStyle(
                                     fontSize: 12,
                                     color: textPrimary,
@@ -235,7 +235,7 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
                           style: TextStyle(
                               fontFamily: 'Poppins', color: textPrimary),
                           decoration: InputDecoration(
-                            hintText: 'Email address',
+                            hintText: 'emailHint'.tr,
                             hintStyle: TextStyle(color: textSecondary, fontSize: 14),
                             prefixIcon: Icon(Icons.email_outlined,
                                 color: accent, size: 20),
@@ -267,7 +267,7 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
                           style: TextStyle(
                               fontFamily: 'Poppins', color: textPrimary),
                           decoration: InputDecoration(
-                            hintText: 'Password',
+                            hintText: 'passwordHint'.tr,
                             hintStyle: TextStyle(color: textSecondary, fontSize: 14),
                             prefixIcon: Icon(Icons.lock_outline,
                                 color: accent, size: 20),
@@ -314,7 +314,7 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
                                   MaterialPageRoute(builder: (_) => Forget()));
                             },
                             child: Text(
-                              'Forgot password?',
+                              'forgotPassword'.tr,
                               style: TextStyle(
                                 color: accent,
                                 fontFamily: 'Poppins',
@@ -382,9 +382,9 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
                                       strokeWidth: 2.5,
                                     ),
                                   )
-                                : const Text(
-                                    'Login',
-                                    style: TextStyle(
+                                : Text(
+                                    'loginBtn'.tr,
+                                    style: const TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600,
                                       fontFamily: 'Poppins',
@@ -401,7 +401,7 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
                             Padding(
                               padding: const EdgeInsets.symmetric(horizontal: 12),
                               child: Text(
-                                'or',
+                                'or'.tr,
                                 style: TextStyle(
                                     color: textSecondary,
                                     fontFamily: 'Poppins',
@@ -419,7 +419,7 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(
-                                "Don't have an account?",
+                                'noAccount'.tr,
                                 style: TextStyle(
                                   fontSize: 14,
                                   color: textSecondary,
@@ -435,7 +435,7 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
                                   );
                                 },
                                 child: Text(
-                                  'Sign Up',
+                                  'signUp'.tr,
                                   style: TextStyle(
                                     fontSize: 14,
                                     color: accent,

@@ -118,7 +118,7 @@ class BookingSuccessPage extends StatelessWidget {
                     _detailRow(
                       icon: Icons.hotel_rounded,
                       label: 'hotelLabel'.tr,
-                      value: hotelName,
+                      value: hotelName.tr,
                       accent: accent,
                       textPrimary: textPrimary,
                       textSecondary: textSecondary,
@@ -127,8 +127,8 @@ class BookingSuccessPage extends StatelessWidget {
                     ),
                     _detailRow(
                       icon: Icons.location_on_rounded,
-                      label: 'Destination',
-                      value: placeName,
+                      label: 'destination'.tr,
+                      value: placeName.tr,
                       accent: accent,
                       textPrimary: textPrimary,
                       textSecondary: textSecondary,

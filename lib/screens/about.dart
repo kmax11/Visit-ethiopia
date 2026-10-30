@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class About extends StatelessWidget {
   const About({Key? key}) : super(key: key);
@@ -14,7 +15,7 @@ class About extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('About'),
+        title: Text('about'.tr),
       ),
       body: Padding(
         padding: const EdgeInsets.all(20),
@@ -62,7 +63,7 @@ class About extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'A travel guide app for exploring the beautiful destinations of Ethiopia.',
+                    'appDescription'.tr,
                     style: TextStyle(
                       fontSize: 14,
                       color: isDark ? const Color(0xFF9E9E9E) : Colors.black54,
@@ -73,7 +74,7 @@ class About extends StatelessWidget {
             ),
             const SizedBox(height: 28),
             Text(
-              'Group Members',
+              'groupMembers'.tr,
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w700,
