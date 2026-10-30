@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import '../screens/details.dart';
 
 class HorizontalPlaceItem extends StatelessWidget {
@@ -43,7 +44,7 @@ class HorizontalPlaceItem extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "${place["name"]}",
+                    "${place["name"]}".tr,
                     style: TextStyle(
                       fontWeight: FontWeight.w700, fontSize: 13, fontFamily: 'Poppins',
                       color: isDark ? const Color(0xFFE8EAF6) : const Color(0xFF1A1A2E),
@@ -57,7 +58,7 @@ class HorizontalPlaceItem extends StatelessWidget {
                       const SizedBox(width: 2),
                       Expanded(
                         child: Text(
-                          "${place["location"]}",
+                          "${place["location"]}".tr,
                           style: TextStyle(
                             fontSize: 11,
                             color: isDark ? const Color(0xFFB0B3C6) : Colors.blueGrey[400],

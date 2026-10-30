@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import '../screens/details.dart';
 
 class VerticalPlaceItem extends StatelessWidget {
@@ -45,7 +46,7 @@ class VerticalPlaceItem extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "${place["name"]}",
+                    "${place["name"]}".tr,
                     style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14, fontFamily: 'Poppins', color: textPrimary),
                     maxLines: 2, overflow: TextOverflow.ellipsis,
                   ),
@@ -56,7 +57,7 @@ class VerticalPlaceItem extends StatelessWidget {
                       const SizedBox(width: 3),
                       Expanded(
                         child: Text(
-                          "${place["location"]}",
+                          "${place["location"]}".tr,
                           style: TextStyle(fontSize: 12, color: textSecondary, fontFamily: 'Poppins'),
                           maxLines: 1, overflow: TextOverflow.ellipsis,
                         ),
@@ -72,7 +73,7 @@ class VerticalPlaceItem extends StatelessWidget {
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: Text(
-                        "${place["category"]}",
+                        "${place["category"]}".tr,
                         style: TextStyle(fontSize: 10, color: accent, fontWeight: FontWeight.w600, fontFamily: 'Poppins'),
                       ),
                     ),
