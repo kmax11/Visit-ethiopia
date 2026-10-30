@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:visitethiopia/main.dart';
+import 'package:visitethiopia/theme/app_theme.dart';
 import 'package:visitethiopia/screens/home.dart';
 import 'package:visitethiopia/screens/calendar.dart';
 import 'package:visitethiopia/screens/favorites.dart';
@@ -25,10 +25,10 @@ class _MainScreenState extends State<MainScreen> {
   ];
 
   final List<_NavItem> _navItems = const [
-    _NavItem(icon: Icons.home_rounded, label: 'Home'),
-    _NavItem(icon: Icons.calendar_month_rounded, label: 'Calendar'),
-    _NavItem(icon: Icons.favorite_rounded, label: 'Favorites'),
-    _NavItem(icon: Icons.person_rounded, label: 'Profile'),
+    _NavItem(icon: Icons.home_rounded, label: 'navHome'),
+    _NavItem(icon: Icons.calendar_month_rounded, label: 'navCalendar'),
+    _NavItem(icon: Icons.favorite_rounded, label: 'navFavorites'),
+    _NavItem(icon: Icons.person_rounded, label: 'navProfile'),
   ];
 
   @override
@@ -51,7 +51,7 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      final ctrl = Get.find<ThemeController>();
+      final ctrl = Get.find<AppThemeController>();
       final isDark = ctrl.isDark;
       final accent = isDark ? const Color(0xFF7B96FF) : const Color(0xFF4F6EF7);
       final navBg = isDark ? const Color(0xFF161A27) : Colors.white;
@@ -111,7 +111,7 @@ class _MainScreenState extends State<MainScreen> {
                           if (isSelected) ...[
                             const SizedBox(width: 6),
                             Text(
-                              item.label,
+                              item.label.tr,
                               style: TextStyle(
                                 color: accent,
                                 fontWeight: FontWeight.w600,
