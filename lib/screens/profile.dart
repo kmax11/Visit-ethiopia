@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:visitethiopia/login/signin.dart';
-import 'package:visitethiopia/main.dart';
+import 'package:visitethiopia/main.dart'; // FavoritesController
+import 'package:visitethiopia/theme/app_theme.dart';
 import 'package:visitethiopia/screens/about.dart';
 import 'package:visitethiopia/screens/calendar.dart';
 import 'package:visitethiopia/screens/calender_converter.dart';
@@ -20,9 +21,9 @@ class ProfilePage extends StatelessWidget {
       context: context,
       builder: (_) {
         return AlertDialog(
-          title: const Text(
-            'Choose Language',
-            style: TextStyle(
+          title: Text(
+            'chooseLanguage'.tr,
+            style: const TextStyle(
               fontFamily: 'Poppins',
               fontWeight: FontWeight.w700,
               fontSize: 16,
@@ -73,7 +74,7 @@ class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      final themeCtrl = Get.find<ThemeController>();
+      final themeCtrl = Get.find<AppThemeController>();
       final favCtrl = Get.find<FavoritesController>();
       final isDark = themeCtrl.isDark;
       final accent = isDark ? const Color(0xFF7B96FF) : const Color(0xFF4F6EF7);
@@ -101,15 +102,6 @@ class ProfilePage extends StatelessWidget {
             ),
           ),
           centerTitle: true,
-          actions: [
-            IconButton(
-              icon: Icon(
-                isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
-                color: accent,
-              ),
-              onPressed: () => themeCtrl.toggleTheme(),
-            ),
-          ],
         ),
         body: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
@@ -175,7 +167,7 @@ class ProfilePage extends StatelessWidget {
                     ),
                     const SizedBox(height: 14),
                     Text(
-                      'Visit Ethiopia Explorer',
+                      'profileExplorer'.tr,
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.w700,
@@ -209,7 +201,7 @@ class ProfilePage extends StatelessWidget {
                               size: 16, color: accent),
                           const SizedBox(width: 6),
                           Text(
-                            'Gold Traveler',
+                            'goldTraveler'.tr,
                             style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w600,
@@ -232,7 +224,7 @@ class ProfilePage extends StatelessWidget {
                   Expanded(
                     child: _statCard(
                       icon: Icons.favorite_rounded,
-                      title: 'Favorites',
+                      title: 'favorites'.tr,
                       value: '${favCtrl.favorites.length}',
                       accent: accent,
                       cardBg: cardBg,
@@ -245,7 +237,7 @@ class ProfilePage extends StatelessWidget {
                   Expanded(
                     child: _statCard(
                       icon: Icons.explore_rounded,
-                      title: 'Trips Taken',
+                      title: 'tripsTaken'.tr,
                       value: '12',
                       accent: accent,
                       cardBg: cardBg,
@@ -258,7 +250,7 @@ class ProfilePage extends StatelessWidget {
                   Expanded(
                     child: _statCard(
                       icon: Icons.star_rounded,
-                      title: 'Reviews',
+                      title: 'reviews'.tr,
                       value: '5',
                       accent: accent,
                       cardBg: cardBg,
@@ -269,7 +261,6 @@ class ProfilePage extends StatelessWidget {
                   ),
                 ],
               ),
-
               const SizedBox(height: 20),
 
               // ── Options List ────────────────────────────────────────
@@ -291,7 +282,7 @@ class ProfilePage extends StatelessWidget {
                     _profileOption(
                       icon: Icons.calendar_month_rounded,
                       title: 'calendar'.tr,
-                      subtitle: 'View Ethiopian Calendar events',
+                      subtitle: 'calendarSubtitle'.tr,
                       accent: accent,
                       textPrimary: textPrimary,
                       textSecondary: textSecondary,
@@ -308,7 +299,7 @@ class ProfilePage extends StatelessWidget {
                     _profileOption(
                       icon: Icons.edit_calendar_rounded,
                       title: 'calendarconverter'.tr,
-                      subtitle: 'Convert between Gregorian & Geez calendar',
+                      subtitle: 'converterSubtitle'.tr,
                       accent: accent,
                       textPrimary: textPrimary,
                       textSecondary: textSecondary,
@@ -325,7 +316,7 @@ class ProfilePage extends StatelessWidget {
                     _profileOption(
                       icon: Icons.currency_exchange_rounded,
                       title: 'currency'.tr,
-                      subtitle: 'Ethiopian Birr exchange rates',
+                      subtitle: 'currencySubtitle'.tr,
                       accent: accent,
                       textPrimary: textPrimary,
                       textSecondary: textSecondary,
@@ -342,7 +333,7 @@ class ProfilePage extends StatelessWidget {
                     _profileOption(
                       icon: Icons.language_rounded,
                       title: 'language'.tr,
-                      subtitle: 'Change app language (English / አማርኛ)',
+                      subtitle: 'languageSubtitle'.tr,
                       accent: accent,
                       textPrimary: textPrimary,
                       textSecondary: textSecondary,
@@ -356,7 +347,7 @@ class ProfilePage extends StatelessWidget {
                     _profileOption(
                       icon: Icons.info_outline_rounded,
                       title: 'about'.tr,
-                      subtitle: 'App version and group members',
+                      subtitle: 'aboutSubtitle'.tr,
                       accent: accent,
                       textPrimary: textPrimary,
                       textSecondary: textSecondary,
@@ -383,9 +374,9 @@ class ProfilePage extends StatelessWidget {
                   },
                   icon: const Icon(Icons.logout_rounded,
                       color: Colors.redAccent, size: 20),
-                  label: const Text(
-                    'Log Out',
-                    style: TextStyle(
+                  label: Text(
+                    'logOut'.tr,
+                    style: const TextStyle(
                       color: Colors.redAccent,
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
